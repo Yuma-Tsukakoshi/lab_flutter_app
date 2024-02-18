@@ -1,5 +1,9 @@
 # lab_flutter_app
 
+get start : cd ./hearable_device_sdk_sample
+flutter run -d 3A251JEHN08638
+※ヒアラブルデバイスとBluetoothで接続する
+
 # ヒアラブルデバイス(RN002)のサンプルアプリについて
 本プロジェクトでは、RN002 TW用アプリケーション開発用SDKを使用したサンプルアプリを公開しています。サンプルアプリはFlutterで開発しています。
 
