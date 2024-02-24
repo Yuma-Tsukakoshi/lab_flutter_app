@@ -112,22 +112,9 @@ class Widgets {
   static Widget resultContainer(
       {required int verticalRatio,
       required TextEditingController controller,
-      required String text}) {
-    controller.text = text;
-    return Container(
-        width: SizeConfig.blockSizeHorizontal * 85,
-        //height: SizeConfig.blockSizeVertical * verticalRatio,
-        height: 180,
-        decoration: BoxDecoration(border: Border.all(width: 1)),
-        child: Column(
-            children: [Expanded(child: Widgets.resultTextField(controller))]));
-  }
+      required String text,}) {
+        controller.text = text;
 
-  static Widget resultContainer2(
-      {required int verticalRatio,
-      required TextEditingController controller,
-      required String text}) {
-    controller.text = text;
     return Container(
         width: SizeConfig.blockSizeHorizontal * 85,
         //height: SizeConfig.blockSizeVertical * verticalRatio,
@@ -137,20 +124,35 @@ class Widgets {
             children: [Expanded(child: Widgets.resultTextField(controller))]));
   }
 
-  static Widget resultContainer3(
+  /*static Widget resultContainerPhoto(
       {required int verticalRatio,
       required TextEditingController controller,
-      required String text}) {
-    controller.text = text;
+      required double text,
+      required String photo
+      }) {
+        //int gyrx=int.parse(text);
+        //controller.text = gyrx.toString();
+
+      if(text>30000){
+      String photo='assets/penguin_down.jpeg';
+      }
+      else{
+      String photo='assets/penguin_up.jpeg';
+      }
+
+      controller.text=photo;
+
+
+
     return Container(
         width: SizeConfig.blockSizeHorizontal * 85,
         //height: SizeConfig.blockSizeVertical * verticalRatio,
-        height: 100,
+        height: 80,
         decoration: BoxDecoration(border: Border.all(width: 1)),
         child: Column(
             children: [Expanded(child: Widgets.resultTextField(controller))]));
   }
-
+  */
   static Widget resultTextField(TextEditingController controller) {
     return TextField(
       controller: controller,

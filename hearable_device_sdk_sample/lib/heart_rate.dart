@@ -3,8 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
 
 class HeartRate extends ChangeNotifier {
-  final HearableDeviceSdkSamplePlugin _samplePlugin =
-      HearableDeviceSdkSamplePlugin();
+  final HearableDeviceSdkSamplePlugin _samplePlugin = HearableDeviceSdkSamplePlugin();
   bool isEnabled = false;
 
   int? _resultCode;
@@ -42,10 +41,7 @@ class HeartRate extends ChangeNotifier {
   }
 
   Future<bool> addHeartRateNotificationListener() async {
-    final res = await _samplePlugin.addHeartRateNotificationListener(
-        onStartNotification: _onStartNotification,
-        onStopNotification: _onStopNotification,
-        onReceiveNotification: _onReceiveNotification);
+    final res = await _samplePlugin.addHeartRateNotificationListener(onStartNotification: _onStartNotification, onStopNotification: _onStopNotification, onReceiveNotification: _onReceiveNotification);
     return res;
   }
 

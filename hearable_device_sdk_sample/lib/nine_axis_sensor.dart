@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
+import 'dart:math' as math;
 
 class NineAxisSensor extends ChangeNotifier {
   final HearableDeviceSdkSamplePlugin _samplePlugin =
@@ -19,30 +20,20 @@ class NineAxisSensor extends ChangeNotifier {
 
   int? get resultCode => _resultCode;
   Uint8List? get data => _data;
+  int gyrx = 0;
+  int gyrz = 0;
 
-  String getResultString() {
+  int getRandomNum() {
+    //ランダム変数生成
+    var random = math.Random();
+    int randomNumber = random.nextInt(5); // 0から4の範囲で乱数を生成
+    //print(randomNumber);
+    return randomNumber;
+  }
+
+  int getResultString() {
     String str = '';
-    //9軸センサの加速度情報をX,Y,Z軸に分離して表示する準備
-    int accXoffset = 5;
-    int accYoffset = 7;
-    int accZoffset = 9;
-    int gyrXoffset = 11;
-    int gyrYoffset = 13;
-    int gyrZoffset = 15;
-    int magXoffset = 17;
-    int magYoffset = 19;
-    int magZoffset = 21;
-    String accX = "";
-    String accY = "";
-    String accZ = "";
-    String gyrX = "";
-    String gyrY = "";
-    String gyrZ = "";
-    String magX = "";
-    String magY = "";
-    String magZ = "";
 
-    /*サンプルアプリのオリジナルソースコード
     if (_resultCode != null) {
       str += 'result code: $_resultCode';
     }
@@ -51,73 +42,131 @@ class NineAxisSensor extends ChangeNotifier {
       str += '\nbyte[]:\n';
       Uint8List data = _data!;
       for (int i = 0; i < data.length - 1; i++) {
-        str += '${data[i].toRadixString(16)}, ';
+        str += '${data[i]}, ';
       }
       str += data.last.toRadixString(16);
-    }*/
 
-    //9時センサの加速度、角速度、地磁気情報をX,Y,Z軸に分離する処理
-    if (_data != null) {
-      Uint8List data = _data!;
-      for (int i = 0; i < 5; i++) {
-        accX +=
-            '${data[accXoffset + (i * 22)].toRadixString(16)}${data[accXoffset + 1 + (i * 22)].toRadixString(16)}';
-        accY +=
-            '${data[accYoffset + (i * 22)].toRadixString(16)}${data[accYoffset + 1 + (i * 22)].toRadixString(16)}';
-        accZ +=
-            '${data[accZoffset + (i * 22)].toRadixString(16)}${data[accZoffset + 1 + (i * 22)].toRadixString(16)}';
-        gyrX +=
-            '${data[gyrXoffset + (i * 22)].toRadixString(16)}${data[gyrXoffset + 1 + (i * 22)].toRadixString(16)}';
-        gyrY +=
-            '${data[gyrYoffset + (i * 22)].toRadixString(16)}${data[gyrYoffset + 1 + (i * 22)].toRadixString(16)}';
-        gyrZ +=
-            '${data[gyrZoffset + (i * 22)].toRadixString(16)}${data[gyrZoffset + 1 + (i * 22)].toRadixString(16)}';
-        magX +=
-            '${data[magXoffset + (i * 22)].toRadixString(16)}${data[magXoffset + 1 + (i * 22)].toRadixString(16)}';
-        magY +=
-            '${data[magYoffset + (i * 22)].toRadixString(16)}${data[magYoffset + 1 + (i * 22)].toRadixString(16)}';
-        magZ +=
-            '${data[gyrZoffset + (i * 22)].toRadixString(16)}${data[magZoffset + 1 + (i * 22)].toRadixString(16)}';
-        if (i != 4) {
-          accX += ',';
-          accY += ',';
-          accZ += ',';
-          gyrX += ',';
-          gyrY += ',';
-          gyrZ += ',';
-          magX += ',';
-          magY += ',';
-          magZ += ',';
-        }
+      //X
+      String upperBitsX = data[11].toRadixString(16); // 上位8ビット
+      String lowerBitsX = data[12].toRadixString(16); // 下位8ビット
+
+      String fullnumX = "$upperBitsX$lowerBitsX";
+      int decimalValueX = int.parse(fullnumX, radix: 16); // 16進数を10進数に変換
+      print(decimalValueX);
+      if (decimalValueX > 23767) {
+        decimalValueX -= 65536;
       }
-      str += 'accX:' +
-          accX +
-          '\n' +
-          'accY:' +
-          accY +
-          '\n' +
-          'accZ:' +
-          accZ +
-          '\n' +
-          'gyrX:' +
-          gyrX +
-          '\n' +
-          'gyrY:' +
-          gyrY +
-          '\n' +
-          'gyrZ:' +
-          gyrZ +
-          '\n' +
-          'magX:' +
-          magX +
-          '\n' +
-          'magY:' +
-          magY +
-          '\n' +
-          'magZ:' +
-          magZ;
+      if (decimalValueX.abs() < 60) {
+        return 0;
+      }
+
+      gyrx = decimalValueX;
+
+      //Y
+      String upperBitsY = data[13].toRadixString(16); // 上位8ビット
+      String lowerBitsY = data[14].toRadixString(16); // 下位8ビット
+
+      String fullnumY = "$upperBitsY$lowerBitsY";
+      int decimalValueY = int.parse(fullnumY, radix: 16); // 16進数を10進数に変換
+      print(decimalValueY);
+
+      //Z
+      String upperBitsZ = data[15].toRadixString(16); // 上位8ビット
+      String lowerBitsZ = data[16].toRadixString(16); // 下位8ビット
+
+      String fullnumZ = "$upperBitsZ$lowerBitsZ";
+      int decimalValueZ = int.parse(fullnumZ, radix: 16); // 16進数を10進数に変換
+      print(decimalValueZ);
+      if (decimalValueZ > 23767) {
+        decimalValueZ -= 65536;
+      }
+      gyrz = decimalValueZ;
+
+      /*double deltaT = (decimalValueX / 100)*5 ;
+
+      double a = deltaT;
+      int delta = deltaT.toInt() ;*/
+
+      //return delta;
+      return decimalValueX;
+      //return gyrx;
+    } else {
+      return 0;
     }
-    return str;
+
+    //return decimalValueX.toString();
+  }
+
+//Copy
+  int getResultStringZ() {
+    String str = '';
+    int i = 0;
+    double a = 0;
+
+    if (_resultCode != null) {
+      str += 'result code: $_resultCode';
+    }
+
+    if (_data != null) {
+      str += '\nbyte[]:\n';
+      Uint8List data = _data!;
+      for (i = 0; i < data.length - 1; i++) {
+        str += '${data[i]}, ';
+      }
+      str += data.last.toRadixString(16);
+
+      //X
+      String upperBitsX = data[11].toRadixString(16); // 上位8ビット
+      String lowerBitsX = data[12].toRadixString(16); // 下位8ビット
+
+      String fullnumX = "$upperBitsX$lowerBitsX";
+      int decimalValueX = int.parse(fullnumX, radix: 16); // 16進数を10進数に変換
+      print(decimalValueX);
+
+      gyrx = decimalValueX;
+
+      //Y
+      String upperBitsY = data[13].toRadixString(16); // 上位8ビット
+      String lowerBitsY = data[14].toRadixString(16); // 下位8ビット
+
+      String fullnumY = "$upperBitsY$lowerBitsY";
+      int decimalValueY = int.parse(fullnumY, radix: 16); // 16進数を10進数に変換
+      print(decimalValueY);
+
+      //Z
+      String upperBitsZ = data[15].toRadixString(16); // 上位8ビット
+      String lowerBitsZ = data[16].toRadixString(16); // 下位8ビット
+
+      String fullnumZ = "$upperBitsZ$lowerBitsZ";
+      int decimalValueZ = int.parse(fullnumZ, radix: 16); // 16進数を10進数に変換
+      print(decimalValueZ);
+      if (decimalValueZ > 23767) {
+        decimalValueZ -= 65536;
+      }
+      gyrz = decimalValueZ;
+
+      if (decimalValueX > 23767) {
+        decimalValueX -= 65536;
+      }
+      //角速度ー＞角度に補正
+
+      // Δt [s](元のセンシング周期は単位がμsだったので、(1000.0 * 1000.0)で割ることで単位をsに変換)
+      /*double deltaT = 5*decimalValueZ / 100 ;
+
+      //double a = 0;
+      a += deltaT ;
+      int angz=a.toInt();
+
+      return angz;*/
+
+      return decimalValueZ;
+    }
+    //return decimalValueZ;
+    //return gyrx;
+
+    else {
+      return 0;
+    }
   }
 
   Future<bool> addNineAxisSensorNotificationListener() async {

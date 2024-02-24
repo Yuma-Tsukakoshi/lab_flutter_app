@@ -13,8 +13,10 @@ import 'package:hearable_device_sdk_sample/ppg.dart';
 import 'package:hearable_device_sdk_sample/eaa.dart';
 import 'package:hearable_device_sdk_sample/battery.dart';
 import 'package:hearable_device_sdk_sample/config.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
+import 'dart:math' as math;
 
 class HearableServiceView extends StatelessWidget {
   const HearableServiceView({super.key});
@@ -162,110 +164,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     setState(() {});
   }
 
-  void _switchTemperature(bool enabled) async {
-    Temperature().isEnabled = enabled;
-    if (enabled) {
-      // callback登録
-      if (!(await Temperature().addTemperatureNotificationListener())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalArgumentException');
-        Temperature().isEnabled = !enabled;
-      }
-      // 取得開始
-      if (!(await _samplePlugin.startTemperatureNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Temperature().isEnabled = !enabled;
-      }
-    } else {
-      // 取得終了
-      if (!(await _samplePlugin.stopTemperatureNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Temperature().isEnabled = !enabled;
-      }
-    }
-    setState(() {});
-  }
-
-  void _switchHeartRate(bool enabled) async {
-    HeartRate().isEnabled = enabled;
-    if (enabled) {
-      // callback登録
-      if (!(await HeartRate().addHeartRateNotificationListener())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalArgumentException');
-        HeartRate().isEnabled = !enabled;
-      }
-      // 取得開始
-      if (!(await _samplePlugin.startHeartRateNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        HeartRate().isEnabled = !enabled;
-      }
-    } else {
-      // 取得終了
-      if (!(await _samplePlugin.stopHeartRateNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        HeartRate().isEnabled = !enabled;
-      }
-    }
-    setState(() {});
-  }
-
-  void _switchPpg(bool enabled) async {
-    Ppg().isEnabled = enabled;
-    if (enabled) {
-      // callback登録
-      if (!(await Ppg().addPpgNotificationListener())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalArgumentException');
-        Ppg().isEnabled = !enabled;
-      }
-      // 取得開始
-      if (!(await _samplePlugin.startPpgNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Ppg().isEnabled = !enabled;
-      }
-    } else {
-      // 取得終了
-      if (!(await _samplePlugin.stopPpgNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Ppg().isEnabled = !enabled;
-      }
-    }
-    setState(() {});
-  }
-
-  void _switchBattery(bool enabled) async {
-    Battery().isEnabled = enabled;
-    if (enabled) {
-      // callback登録
-      if (!(await Battery().addBatteryNotificationListener())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalArgumentException');
-        Battery().isEnabled = !enabled;
-      }
-      // 取得開始
-      if (!(await _samplePlugin.startBatteryNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Battery().isEnabled = !enabled;
-      }
-    } else {
-      // 取得終了
-      if (!(await _samplePlugin.stopBatteryNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Battery().isEnabled = !enabled;
-      }
-    }
-    setState(() {});
-  }
-
   // 選択可能なListView
   ListView _createUserListView(BuildContext context) {
     return ListView.builder(
@@ -399,6 +297,40 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     _resetSelection();
   }
 
+/*
+   double num = 1000;
+  int i = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Flutter Code Sample'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(50),
+        child: LineChart(
+          LineChartData(lineBarsData: [
+            LineChartBarData(spots: [
+              FlSpot(1, num),
+              FlSpot(2, num + 100),
+              FlSpot(3, num + 200),
+              FlSpot(4, num + 300),
+              FlSpot(5, num + 400),
+              FlSpot(6, num + 500),
+              FlSpot(7, num + 600),
+              FlSpot(8, num + 700),
+              FlSpot(9, 203),
+              FlSpot(10, 246),
+              FlSpot(11, 345),
+            ])
+          ]),
+        ),
+      ),
+    );
+  }
+  */
+
   @override
   Widget build(BuildContext context) {
     _setRequiredNumText();
@@ -413,113 +345,394 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
           getRegistrationStatusCallback: _getRegistrationStatusCallback);
       isSetEaaCallback = true;
     }
+    //int gyrX;
+    String random = NineAxisSensor().getRandomNum().toString();
+    int x_num = NineAxisSensor().getResultString();
+    int z_num = NineAxisSensor().getResultStringZ();
 
     return Scaffold(
       appBar: AppBar(
+        //leadingWidth: SizeConfig.blockSizeHorizontal * 20,
+        //leading: Widgets.barBackButton(context),
         title: const Text('センサデータ確認', style: TextStyle(fontSize: 16)),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(48, 116, 187, 10),
+        //iconTheme: const IconThemeData(color: Colors.blue),
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => {_saveInput(context)},
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 10),
-                const Text('確認したいデータをOnにしてください',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                // 9軸センサ
-                const SizedBox(
-                  height: 20,
-                ),
-                Consumer<NineAxisSensor>(
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/background_image_2.jpg'),
+                  //fit: BoxFit.cover,
+                  fit: BoxFit.fitHeight),
+            ),
+          ),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => {_saveInput(context)},
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    const SizedBox(height: 10),
+                    const Text('確認したいデータをOnにしてください',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
+                    // 9軸センサ
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Consumer<NineAxisSensor>(
+                        builder: ((context, nineAxisSensor, _) =>
+                            Widgets.switchContainer(
+                                title: '9軸センサ',
+                                enable: nineAxisSensor.isEnabled,
+                                function: _switch9AxisSensor))),
+                    const SizedBox(height: 5),
+                    Consumer<NineAxisSensor>(
+                        builder: ((context, nineAxisSensor, _) =>
+                            Widgets.resultContainer(
+                              verticalRatio: 40,
+                              controller: nineAxisSensorResultController,
+                              text: ' x: ' +
+                                  nineAxisSensor.getResultString().toString() +
+                                  ' ,  z:  ' +
+                                  nineAxisSensor.getResultStringZ().toString() +
+                                  '  ',
+                            ))),
+                    const SizedBox(height: 20),
+
+                    //機械側の出力
+                    if (random == "0") ...{
+                      //Image.asset('assets/up.png', height: 200, width: 200),
+                      Text("対戦相手：上"),
+                    } else if (random == "1") ...{
+                      //Image.asset('assets/down.png', height: 200, width: 200),
+                      Text("対戦相手：下"),
+                    } else if (random == "2") ...{
+                      //Image.asset('assets/down.png', height: 200, width: 200),
+                      Text("対戦相手：左"),
+                    } else if (random == "3") ...{
+                      //Image.asset('assets/down.png', height: 200, width: 200),
+                      Text("対戦相手：右"),
+                    } else if (random == "4") ...{
+                      //Image.asset('assets/down.png', height: 200, width: 200),
+                      Text("対戦相手：正面"),
+                    },
+
+                    //ユーザー側の出力
+                    if ((x_num > -500 && x_num < 500) && z_num > 200) ...{
+                      Text("自分：上"),
+                      if (random == "0") ...{
+                        Image.asset('assets/up.png', height: 200, width: 200),
+                        Text("負け"),
+                      } else ...{
+                        Image.asset('assets/frog.png', height: 200, width: 200),
+                        Text("勝ち"),
+                      }
+                    } else if ((x_num > -500 && x_num < 500) &&
+                        z_num < -200) ...{
+                      Text("自分：下"),
+                      if (random == "1") ...{
+                        Image.asset('assets/down.png', height: 200, width: 200),
+                        Text("負け"),
+                      } else ...{
+                        Image.asset('assets/frog.png', height: 200, width: 200),
+                        Text("勝ち"),
+                      }
+                    } else if ((z_num > -500 && z_num < 500) &&
+                        x_num > 200) ...{
+                      Text("自分：左"),
+                      if (random == "2") ...{
+                        Image.asset('assets/left.png', height: 200, width: 200),
+                        Text("負け"),
+                      } else ...{
+                        Image.asset('assets/frog.png', height: 200, width: 200),
+                        Text("勝ち"),
+                      }
+                    } else if ((z_num > -500 && z_num < 500) &&
+                        x_num < -200) ...{
+                      Text("自分：右"),
+                      if (random == "3") ...{
+                        Image.asset('assets/right.png',
+                            height: 200, width: 200),
+                        Text("負け"),
+                      } else ...{
+                        Image.asset('assets/frog.png', height: 200, width: 200),
+                        Text("勝ち"),
+                      }
+                    } else ...{
+                      Text("自分：正面"),
+                      if (random == "4") ...{
+                        Image.asset('assets/front.png',
+                            height: 200, width: 200),
+                        Text("負け"),
+                      } else ...{
+                        Image.asset('assets/frog.png', height: 200, width: 200),
+                        Text("勝ち"),
+                      }
+                    },
+                    //const SizedBox(height: 20),
+
+                    const SizedBox(height: 20),
+                    /*Consumer<NineAxisSensor>(
                     builder: ((context, nineAxisSensor, _) =>
-                        Widgets.switchContainer(
-                            title: '9軸センサ',
-                            enable: nineAxisSensor.isEnabled,
-                            function: _switch9AxisSensor))),
-                const SizedBox(height: 10),
-                Consumer<NineAxisSensor>(
+                        Widgets.resultContainerPhoto(
+                            verticalRatio: 40,
+                            controller: nineAxisSensorResultController,
+                            text:  nineAxisSensor.getResultString().toString(),
+                            photo: nineAxisSensor.getResultString().toString()
+                            
+                            
+                            //NineAxisSensor().gyrx<30000 ?Image.asset('assets/penguin_up.jpeg'):Image.asset('assets/penguin_up.jpeg'),
+                            /*if(nineAxisSensor.getResultString()>30000){
+                              String a=assets/penguin_down.jpeg;
+                            }*/
+                            ))
+                            ),
+                          */
+                    //if
+                    //NineAxisSensor().getResultString()<30000 ?Image.asset('assets/penguin_down.jpeg'):Image.asset('assets/penguin_up.jpeg'),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    /*Consumer<NineAxisSensor>(
                     builder: ((context, nineAxisSensor, _) =>
                         Widgets.resultContainer(
                             verticalRatio: 40,
                             controller: nineAxisSensorResultController,
-                            text: nineAxisSensor.getResultString()))),
-                const SizedBox(height: 20),
-                // 温度
-                Consumer<Temperature>(
-                    builder: ((context, temperature, _) =>
-                        Widgets.switchContainer(
-                            title: '温度',
-                            enable: temperature.isEnabled,
-                            function: _switchTemperature))),
-                const SizedBox(height: 10),
-                Consumer<Temperature>(
-                    builder: ((context, temperature, _) =>
-                        Widgets.resultContainer2(
-                            verticalRatio: 15,
-                            controller: temperatureResultController,
-                            text: temperature.getResultString()))),
-                const SizedBox(height: 20),
-                // 脈数
-                Consumer<HeartRate>(
-                    builder: ((context, heartRate, _) =>
-                        Widgets.switchContainer(
-                            title: '脈数',
-                            enable: heartRate.isEnabled,
-                            function: _switchHeartRate))),
-                const SizedBox(height: 10),
-                Consumer<HeartRate>(
-                    builder: ((context, heartRate, _) =>
-                        Widgets.resultContainer2(
-                            verticalRatio: 18,
-                            controller: heartRateResultController,
-                            text: heartRate.getResultString()))),
-                const SizedBox(height: 20),
-                // 装着適正度
-                Consumer<Ppg>(
-                    builder: ((context, ppg, _) => Widgets.switchContainer(
-                        title: '装着適正度',
-                        enable: ppg.isEnabled,
-                        function: _switchPpg))),
-                const SizedBox(height: 10),
-                Consumer<Ppg>(
-                    builder: ((context, ppg, _) => Widgets.resultContainer3(
-                        verticalRatio: 18,
-                        controller: ppgResultController,
-                        text: ppg.getResultString()))),
-                const SizedBox(height: 20),
-                // バッテリー情報取得間隔設定
-                Widgets.inputNumberContainer(
-                    title: 'バッテリー情報取得間隔設定',
-                    unit: '秒',
-                    horizontalRatio: 20,
-                    controller: batteryIntervalController,
-                    function: _onSavedBatteryInterval),
-                const SizedBox(height: 10),
-                Consumer<Battery>(
-                    builder: ((context, battery, _) => Widgets.switchContainer(
-                        title: 'バッテリー情報',
-                        enable: battery.isEnabled,
-                        function: _switchBattery))),
-                const SizedBox(height: 10),
-                Consumer<Battery>(
-                    builder: ((context, battery, _) => Widgets.resultContainer2(
-                        verticalRatio: 15,
-                        controller: batteryResultController,
-                        text: battery.getResultString()))),
-                const SizedBox(height: 20),
-              ],
+                            text: nineAxisSensor.getResultString().toString()
+                            //NineAxisSensor().getResultString()<30000 ?Image.asset('assets/penguin_down.jpeg'):Image.asset('assets/penguin_up.jpeg'),
+
+                            /*if(nineAxisSensor.getResultString()>30000){
+                              String a=assets/penguin_down.jpeg;
+                            }*/
+                            ))
+                            ),*/
+                    Text(
+                        'X:' +
+                            x_num.toString() +
+                            " "
+                                'Z:' +
+                            z_num.toString() +
+                            'Random' +
+                            random.toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 50)),
+                    // 9軸センサ
+                  ],
+                ),
+              ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+/*if(NineAxisSensor().getResultString()<30000){
+                  children.add(Image.asset('assets/penguin_down.jpeg'));
+                  }else {
+                    children.add(Image.asset('assets/penguin_down.jpeg'));
+                  }
+
+                return Column(
+                  children: children,
+                )*/
+
+/*
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  // ユーザUUID
+                  child: Row(children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 10, left: 30),
+                      child: Text(
+                        'ユーザUUID',
+                        style: WidgetConfig.boldTextStyle,
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.blockSizeHorizontal * 10),
+                    // UUID生成ボタン
+                    ElevatedButton(
+                        onPressed: _createUuid,
+                        style: WidgetConfig.buttonStyle,
+                        child: const Text(
+                          '生成',
+                          style: WidgetConfig.buttonTextStyle,
+                        ))
+                  ]),
+                ),
+                Text(
+                  userUuid,
+                  style: WidgetConfig.uuidTextStyle,
+                ),
+                const SizedBox(height: 20),
+                Widgets.inputNumberContainer(
+                    title: '特徴量取得必要回数',
+                    unit: '回',
+                    horizontalRatio: 15,
+                    controller: featureRequiredNumController,
+                    function: _onSavedFeatureRequiredNum),
+                const SizedBox(height: 20),
+                // 特徴量取得・登録、キャンセル
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal * 40,
+                      // 取得・登録ボタン
+                      child: ElevatedButton(
+                        onPressed: _feature,
+                        style: WidgetConfig.buttonStyle,
+                        child: const Text(
+                          '特徴量取得＆登録',
+                          style: WidgetConfig.buttonTextStyle,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.blockSizeHorizontal * 5),
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal * 40,
+                      // 登録キャンセルボタン
+                      child: ElevatedButton(
+                        onPressed: _cancelRegistration,
+                        style: WidgetConfig.buttonStyle,
+                        child: const Text(
+                          'キャンセル',
+                          style: WidgetConfig.buttonTextStyle,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 20),
+                      child: Text(
+                        '特徴量取得回数',
+                        style: WidgetConfig.boldTextStyle,
+                      ),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Consumer<Eaa>(
+                            builder: ((context, eaa, _) =>
+                                Text('${eaa.featureGetCount} 回'))))
+                  ],
+                ),
+                const SizedBox(height: 20),
+                // 照合、状態取得
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal * 40,
+                      // 照合ボタン
+                      child: ElevatedButton(
+                        onPressed: _verify,
+                        style: WidgetConfig.buttonStyle,
+                        child: const Text(
+                          '照合',
+                          style: WidgetConfig.buttonTextStyle,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.blockSizeHorizontal * 5),
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal * 40,
+                      // 状態取得ボタン
+                      child: ElevatedButton(
+                        onPressed: _requestRegisterStatus,
+                        style: WidgetConfig.buttonStyle,
+                        child: const Text(
+                          '登録状態',
+                          style: WidgetConfig.buttonTextStyle,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  alignment: Alignment.topLeft,
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 20),
+                    child: Text(
+                      '登録ユーザUUID',
+                      style: WidgetConfig.boldTextStyle,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                    width: SizeConfig.blockSizeHorizontal * 85,
+                    height: SizeConfig.blockSizeVertical * 20,
+                    child: Consumer<Eaa>(
+                        builder: ((context, eaa, _) =>
+                            _createUserListView(context)))),
+                const SizedBox(height: 10),
+                // ユーザー登録削除、全削除
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal * 40,
+                      // ユーザー登録削除ボタン
+                      child: ElevatedButton(
+                        onPressed: _deleteRegistration,
+                        style: WidgetConfig.buttonStyle,
+                        child: const Text(
+                          'ユーザー削除',
+                          style: WidgetConfig.buttonTextStyle,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: SizeConfig.blockSizeHorizontal * 5),
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal * 40,
+                      // 全削除ボタン
+                      child: ElevatedButton(
+                        onPressed: _deleteAllRegistration,
+                        style: WidgetConfig.buttonStyle,
+                        child: const Text(
+                          '全削除',
+                          style: WidgetConfig.buttonTextStyle,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Consumer<Eaa>(
+                    builder: ((context, eaa, _) => Widgets.resultContainer(
+                        verticalRatio: 25,
+                        controller: eaaResultController,
+                        text: eaa.resultStr))),
+                const SizedBox(height: 20),*/
+
+/*           ),
           ),
         ),
       ),
     );
   }
+  
 }
+*/
+
+/*int getRandomNum() {
+  //ランダム変数生成
+  var random = math.Random();
+  int randomNumber = random.nextInt(5); // 0から4の範囲で乱数を生成
+  //print(randomNumber);
+  return randomNumber;
+}
+*/

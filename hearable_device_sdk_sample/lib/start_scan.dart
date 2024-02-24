@@ -256,34 +256,6 @@ class _StartScanState extends State<_StartScan> {
                     ));
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.report),
-              title: const Text(('ライセンス')),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return const LicensePage();
-                      },
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        const Offset begin = Offset(1.0, 0.0); // 右から左
-                        // final Offset begin = Offset(-1.0, 0.0); // 左から右
-                        const Offset end = Offset.zero;
-                        final Animatable<Offset> tween =
-                            Tween(begin: begin, end: end)
-                                .chain(CurveTween(curve: Curves.easeInOut));
-                        final Animation<Offset> offsetAnimation =
-                            animation.drive(tween);
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        );
-                      },
-                    ));
-              },
-            ),
           ],
         ),
       ),
