@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hearable_device_sdk_sample/calendar.dart';
 import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
@@ -330,6 +331,22 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     );
   }
   */
+  int _selectedIndex = 0;
+ 
+  void _onItemTapped(int index) {
+  setState(() {
+    _selectedIndex = index;
+    if (index == 0) {
+      
+    } else if (index == 1) {
+      // Calendar画面に遷移
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Calendar()),
+      );
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -523,7 +540,8 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             'Random' +
                             random.toString(),
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 50)),
+                            fontWeight: FontWeight.bold, fontSize: 50)
+                    ),
                     // 9軸センサ
                   ],
                 ),
@@ -532,6 +550,21 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
           ),
         ],
       ),
+      bottomNavigationBar: BottomNavigationBar(
+       items: const [
+         BottomNavigationBarItem(
+           icon: Icon(Icons.home),
+           label: 'Home',
+         ),
+         BottomNavigationBarItem(
+           icon: Icon(Icons.calendar_today),
+           label: 'Calendar',
+         ),
+       ],
+       currentIndex: _selectedIndex,
+       selectedItemColor: Color.fromARGB(255, 26, 154, 228),
+       onTap: _onItemTapped,
+     ),
     );
   }
 }
