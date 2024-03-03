@@ -298,39 +298,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     _resetSelection();
   }
 
-/*
-   double num = 1000;
-  int i = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Code Sample'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(50),
-        child: LineChart(
-          LineChartData(lineBarsData: [
-            LineChartBarData(spots: [
-              FlSpot(1, num),
-              FlSpot(2, num + 100),
-              FlSpot(3, num + 200),
-              FlSpot(4, num + 300),
-              FlSpot(5, num + 400),
-              FlSpot(6, num + 500),
-              FlSpot(7, num + 600),
-              FlSpot(8, num + 700),
-              FlSpot(9, 203),
-              FlSpot(10, 246),
-              FlSpot(11, 345),
-            ])
-          ]),
-        ),
-      ),
-    );
-  }
-  */
   int _selectedIndex = 0;
  
   void _onItemTapped(int index) {
@@ -371,7 +338,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       appBar: AppBar(
         //leadingWidth: SizeConfig.blockSizeHorizontal * 20,
         //leading: Widgets.barBackButton(context),
-        title: const Text('センサデータ確認', style: TextStyle(fontSize: 16)),
+        title: const Text('トレーニングセンサデータ確認', style: TextStyle(fontSize: 16)),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(48, 116, 187, 10),
         //iconTheme: const IconThemeData(color: Colors.blue),
@@ -396,10 +363,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    const SizedBox(height: 10),
-                    const Text('確認したいデータをOnにしてください',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16)),
                     // 9軸センサ
                     const SizedBox(
                       height: 20,
@@ -540,9 +503,128 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             'Random' +
                             random.toString(),
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 50)
+                            fontWeight: FontWeight.bold, fontSize: 20)
                     ),
                     // 9軸センサ
+                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Card(
+                          child: Container(
+                            width: 150,
+                            height: 150,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
+                                children: [
+                                  Text(
+                                    'セット数',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10), 
+                                  Text(
+                                    ' 残り 1セット ',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Card(
+                          child: Container(
+                            width: 150,
+                            height: 150,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
+                                children: [
+                                  Text(
+                                    '種目',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10), 
+                                  Text(
+                                    ' 腕立て伏せ ',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Image.asset('assets/udetate.png', height: 320, width: 320),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Card(
+                          child: Container(
+                            width: 320,
+                            height: 120,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
+                                children: [
+                                  Text(
+                                    '残り回数',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10), 
+                                  Text(
+                                    ' 12 ',
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        // ボタンが押された時の処理
+                      },
+                      child: const Text('トレーニングを終了する',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white
+                          )),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(162, 163, 193, 218),
+                          ),
+                    ),
+
                   ],
                 ),
               ),
@@ -550,6 +632,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
           ),
         ],
       ),
+
       bottomNavigationBar: BottomNavigationBar(
        items: const [
          BottomNavigationBarItem(
