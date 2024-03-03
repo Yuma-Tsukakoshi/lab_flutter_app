@@ -101,54 +101,90 @@ class _StartScreenState extends State<_StartScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 50,
-              ),
-              Image.asset('assets/up.png'),
-              const SizedBox(
-                height: 50,
-              ),
-              const Text(
-                'mトレクエスト',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              const Text('音楽と筋トレで健康な身体を ! '),
-              const SizedBox(
-                height: 80,
-              ),
-              TextButton(
-                  onPressed: () {
-                    _startService();
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) {
-                          return const StartScan(title: '接続開始');
-                        },
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const Offset begin = Offset(1.0, 0.0); // 右から左
-                          // final Offset begin = Offset(-1.0, 0.0); // 左から右
-                          const Offset end = Offset.zero;
-                          final Animatable<Offset> tween =
-                              Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: Curves.easeInOut));
-                          final Animation<Offset> offsetAnimation =
-                              animation.drive(tween);
-                          return SlideTransition(
-                            position: offsetAnimation,
-                            child: child,
-                          );
-                        },
+              Stack(
+                children: [
+                  Image.asset('assets/lp.png'),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Color.fromARGB(150, 59, 120, 250),
+                            ),
+                            padding: EdgeInsets.all(10),
+                            child:Column(
+                              children: [
+                                Text(
+                                  'Mトレクエスト',
+                                  style: TextStyle(
+                                    fontSize: 40,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 10), 
+                                Text(
+                                  '~ 音楽と筋トレで健康な身体を! ~ ',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  child: const Text(
-                    '早速始める',
-                    style: TextStyle(fontSize: 20),
-                  ))
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 60),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/tsurugi.png', height: 100, width: 100),
+                  TextButton(
+                      onPressed: () {
+                        _startService();
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) {
+                              return const StartScan(title: '接続開始');
+                            },
+                            transitionsBuilder:
+                                (context, animation, secondaryAnimation, child) {
+                              const Offset begin = Offset(1.0, 0.0); // 右から左
+                              // final Offset begin = Offset(-1.0, 0.0); // 左から右
+                              const Offset end = Offset.zero;
+                              final Animatable<Offset> tween =
+                                  Tween(begin: begin, end: end)
+                                      .chain(CurveTween(curve: Curves.easeInOut));
+                              final Animation<Offset> offsetAnimation =
+                                  animation.drive(tween);
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        '冒険を始める',
+                        style: TextStyle(fontSize: 20),
+                      )
+                  ),
+                ],
+              ),
             ],
           ),
         ));
