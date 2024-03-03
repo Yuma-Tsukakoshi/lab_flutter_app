@@ -10,7 +10,7 @@ import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plu
 
 void main() {
   runApp(const MaterialApp(
-    title: 'ヒアラブル機能テストアプリ',
+    title: 'mトレクエスト',
     home: StartScreen(),
   ));
 }
@@ -109,13 +109,13 @@ class _StartScreenState extends State<_StartScreen> {
                 height: 50,
               ),
               const Text(
-                'このサンプルアプリについて',
+                'mトレクエスト',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 5,
               ),
-              const Text('ヒアラブルデバイスとの接続確認が行えます。'),
+              const Text('音楽と筋トレで健康な身体を ! '),
               const SizedBox(
                 height: 80,
               ),
