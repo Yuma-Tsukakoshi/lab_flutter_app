@@ -298,39 +298,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     _resetSelection();
   }
 
-/*
-   double num = 1000;
-  int i = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Flutter Code Sample'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(50),
-        child: LineChart(
-          LineChartData(lineBarsData: [
-            LineChartBarData(spots: [
-              FlSpot(1, num),
-              FlSpot(2, num + 100),
-              FlSpot(3, num + 200),
-              FlSpot(4, num + 300),
-              FlSpot(5, num + 400),
-              FlSpot(6, num + 500),
-              FlSpot(7, num + 600),
-              FlSpot(8, num + 700),
-              FlSpot(9, 203),
-              FlSpot(10, 246),
-              FlSpot(11, 345),
-            ])
-          ]),
-        ),
-      ),
-    );
-  }
-  */
   int _selectedIndex = 0;
  
   void _onItemTapped(int index) {
@@ -371,7 +338,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       appBar: AppBar(
         //leadingWidth: SizeConfig.blockSizeHorizontal * 20,
         //leading: Widgets.barBackButton(context),
-        title: const Text('センサデータ確認', style: TextStyle(fontSize: 16)),
+        title: const Text('トレーニングセンサデータ確認', style: TextStyle(fontSize: 16)),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(48, 116, 187, 10),
         //iconTheme: const IconThemeData(color: Colors.blue),
@@ -381,7 +348,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/background_image_2.jpg'),
+                  image: AssetImage('assets/hukkin.png'),
                   //fit: BoxFit.cover,
                   fit: BoxFit.fitHeight),
             ),
