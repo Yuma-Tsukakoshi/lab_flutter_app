@@ -350,6 +350,41 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                   fit: BoxFit.fitHeight),
             ),
           ),
+          Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Card(
+                          child: Container(
+                            width: 320,
+                            height: 120,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
+                                children: [
+                                  Text(
+                                    '現在のユーザーレベル',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10), 
+                                  Text(
+                                    ' 21 Lv.',
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
