@@ -351,52 +351,50 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                   fit: BoxFit.fitHeight),
             ),
           ),
-                const SizedBox(height: 50),
-
-                TableCalendar(
-                  firstDay: DateTime(2020, 1, 1),
-                  lastDay: DateTime(2040, 12, 31),
-                  focusedDay: DateTime.now(),
-                  locale: 'ja_JP',
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 150),
+                  child: TableCalendar(
+                    firstDay: DateTime(2020, 1, 1),
+                    lastDay: DateTime(2040, 12, 31),
+                    focusedDay: DateTime.now(),
+                    locale: 'ja_JP',
+                    ),
                 ),
-                
-                const SizedBox(height: 100),
-
                 Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Card(
-                          child: Container(
-                            width: 320,
-                            height: 120,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
-                                children: [
-                                  Text(
-                                    '現在のユーザーレベル',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Card(
+                        child: Container(
+                          width: 320,
+                          height: 120,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  '現在のユーザーレベル',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const SizedBox(height: 10), 
-                                  Text(
-                                    ' 21 Lv.',
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  ' 21 Lv.',
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
