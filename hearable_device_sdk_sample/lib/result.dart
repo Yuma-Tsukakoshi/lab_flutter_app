@@ -311,7 +311,10 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
         MaterialPageRoute(builder: (context) => HearableServiceView()),
       );
     } else if (index == 1) {
-      // Calendar画面に遷移
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Calendar()),
+      );
     }
   });
 }
