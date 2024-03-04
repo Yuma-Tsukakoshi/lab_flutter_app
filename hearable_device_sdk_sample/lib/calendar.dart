@@ -16,6 +16,7 @@ import 'package:hearable_device_sdk_sample/eaa.dart';
 import 'package:hearable_device_sdk_sample/battery.dart';
 import 'package:hearable_device_sdk_sample/config.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
 import 'dart:math' as math;
@@ -350,7 +351,18 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                   fit: BoxFit.fitHeight),
             ),
           ),
-          Row(
+                const SizedBox(height: 50),
+
+                TableCalendar(
+                  firstDay: DateTime(2020, 1, 1),
+                  lastDay: DateTime(2040, 12, 31),
+                  focusedDay: DateTime.now(),
+                  locale: 'ja_JP',
+                ),
+                
+                const SizedBox(height: 100),
+
+                Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Card(
