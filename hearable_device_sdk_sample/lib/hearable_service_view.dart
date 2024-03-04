@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hearable_device_sdk_sample/calendar.dart';
+import 'package:hearable_device_sdk_sample/result.dart';
 import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
@@ -610,10 +611,26 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                         ),
                       ],
                     ),
-
                     ElevatedButton(
                       onPressed: () {
                         // ボタンが押された時の処理
+                      },
+                      child: const Text('トレーニングを開始する',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white
+                          )),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(161, 243, 39, 39),
+                          ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return Result();
+                        }));
                       },
                       child: const Text('トレーニングを終了する',
                           style: TextStyle(
@@ -624,7 +641,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             primary: Color.fromARGB(162, 163, 193, 218),
                           ),
                     ),
-
                   ],
                 ),
               ),
