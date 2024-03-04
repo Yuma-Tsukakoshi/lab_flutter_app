@@ -7,12 +7,17 @@ import 'package:hearable_device_sdk_sample/alert.dart';
 import 'package:hearable_device_sdk_sample/result_message.dart';
 import 'package:hearable_device_sdk_sample/bluetooth_manager.dart';
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
-  runApp(const MaterialApp(
-    title: 'mトレクエスト',
-    home: StartScreen(),
-  ));
+void main() async {
+  await initializeDateFormatting('ja_JP').then(
+    (_) {
+      runApp(const MaterialApp(
+        title: 'mトレクエスト',
+        home: StartScreen(),
+      ));
+    },
+ );
 }
 
 class StartScreen extends StatelessWidget {
