@@ -331,7 +331,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       isSetEaaCallback = true;
     }
     //int gyrX;
-    String random = NineAxisSensor().getRandomNum().toString();
     int x_num = NineAxisSensor().getResultString();
     int z_num = NineAxisSensor().getResultStringZ();
 
@@ -388,77 +387,26 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             ))),
                     const SizedBox(height: 20),
 
-                    //機械側の出力
-                    if (random == "0") ...{
-                      //Image.asset('assets/up.png', height: 200, width: 200),
-                      Text("対戦相手：上"),
-                    } else if (random == "1") ...{
-                      //Image.asset('assets/down.png', height: 200, width: 200),
-                      Text("対戦相手：下"),
-                    } else if (random == "2") ...{
-                      //Image.asset('assets/down.png', height: 200, width: 200),
-                      Text("対戦相手：左"),
-                    } else if (random == "3") ...{
-                      //Image.asset('assets/down.png', height: 200, width: 200),
-                      Text("対戦相手：右"),
-                    } else if (random == "4") ...{
-                      //Image.asset('assets/down.png', height: 200, width: 200),
-                      Text("対戦相手：正面"),
-                    },
-
                     //ユーザー側の出力
                     if ((x_num > -500 && x_num < 500) && z_num > 200) ...{
                       Text("自分：上"),
-                      if (random == "0") ...{
-                        Image.asset('assets/up.png', height: 200, width: 200),
-                        Text("負け"),
-                      } else ...{
-                        Image.asset('assets/frog.png', height: 200, width: 200),
-                        Text("勝ち"),
-                      }
+              
                     } else if ((x_num > -500 && x_num < 500) &&
                         z_num < -200) ...{
                       Text("自分：下"),
-                      if (random == "1") ...{
-                        Image.asset('assets/down.png', height: 200, width: 200),
-                        Text("負け"),
-                      } else ...{
-                        Image.asset('assets/frog.png', height: 200, width: 200),
-                        Text("勝ち"),
-                      }
+        
                     } else if ((z_num > -500 && z_num < 500) &&
                         x_num > 200) ...{
                       Text("自分：左"),
-                      if (random == "2") ...{
-                        Image.asset('assets/left.png', height: 200, width: 200),
-                        Text("負け"),
-                      } else ...{
-                        Image.asset('assets/frog.png', height: 200, width: 200),
-                        Text("勝ち"),
-                      }
+ 
                     } else if ((z_num > -500 && z_num < 500) &&
                         x_num < -200) ...{
                       Text("自分：右"),
-                      if (random == "3") ...{
-                        Image.asset('assets/right.png',
-                            height: 200, width: 200),
-                        Text("負け"),
-                      } else ...{
-                        Image.asset('assets/frog.png', height: 200, width: 200),
-                        Text("勝ち"),
-                      }
+                      
                     } else ...{
                       Text("自分：正面"),
-                      if (random == "4") ...{
-                        Image.asset('assets/front.png',
-                            height: 200, width: 200),
-                        Text("負け"),
-                      } else ...{
-                        Image.asset('assets/frog.png', height: 200, width: 200),
-                        Text("勝ち"),
-                      }
+                     
                     },
-                    //const SizedBox(height: 20),
 
                     const SizedBox(height: 20),
                     /*Consumer<NineAxisSensor>(
@@ -479,9 +427,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                           */
                     //if
                     //NineAxisSensor().getResultString()<30000 ?Image.asset('assets/penguin_down.jpeg'):Image.asset('assets/penguin_up.jpeg'),
-                    const SizedBox(
-                      height: 20,
-                    ),
+ 
                     /*Consumer<NineAxisSensor>(
                     builder: ((context, nineAxisSensor, _) =>
                         Widgets.resultContainer(
@@ -500,20 +446,56 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             x_num.toString() +
                             " "
                                 'Z:' +
-                            z_num.toString() +
-                            'Random' +
-                            random.toString(),
+                            z_num.toString(),
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20)
                     ),
                     // 9軸センサ
-                     Row(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Card(
+                          child: Container(
+                            width: 320,
+                            height: 80,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
+                                children: [
+                                  Text(
+                                    '種目',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10), 
+                                  Text(
+                                    '腕立て伏せ',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Image.asset('assets/udetate.png', height: 220, width: 320),
+                    const SizedBox(height: 20),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Card(
                           child: Container(
                             width: 150,
-                            height: 150,
+                            height: 100,
                             child: Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
@@ -521,7 +503,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   Text(
                                     'セット数',
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -530,7 +512,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   Text(
                                     ' 残り 1セット ',
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -544,45 +526,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                         Card(
                           child: Container(
                             width: 150,
-                            height: 150,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
-                                children: [
-                                  Text(
-                                    '種目',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10), 
-                                  Text(
-                                    ' 腕立て伏せ ',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Image.asset('assets/udetate.png', height: 320, width: 320),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Card(
-                          child: Container(
-                            width: 320,
-                            height: 120,
+                            height: 100,
                             child: Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
@@ -590,7 +534,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   Text(
                                     '残り回数',
                                     style: TextStyle(
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -599,7 +543,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   Text(
                                     ' 12 ',
                                     style: TextStyle(
-                                      fontSize: 30,
+                                      fontSize: 20,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -611,6 +555,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                         ),
                       ],
                     ),
+                    
                     ElevatedButton(
                       onPressed: () {
                         // ボタンが押された時の処理
