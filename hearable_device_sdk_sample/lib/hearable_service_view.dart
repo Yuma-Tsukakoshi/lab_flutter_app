@@ -610,7 +610,20 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                         ),
                       ],
                     ),
-
+                    ElevatedButton(
+                      onPressed: () {
+                        // ボタンが押された時の処理
+                      },
+                      child: const Text('トレーニングを開始する',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white
+                          )),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(161, 243, 39, 39),
+                          ),
+                    ),
+                    const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
                         // ボタンが押された時の処理
@@ -624,8 +637,10 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             primary: Color.fromARGB(162, 163, 193, 218),
                           ),
                     ),
-
                   ],
+
+
+
                 ),
               ),
             ),
