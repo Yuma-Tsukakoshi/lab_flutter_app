@@ -20,6 +20,14 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
 import 'dart:math' as math;
 
+import 'package:hearable_device_sdk_sample/lineChart.dart';
+import 'package:hearable_device_sdk_sample/pricePoints.dart';
+
+import 'dart:async';
+import 'dart:io';
+import 'package:excel/excel.dart';
+import 'package:path_provider/path_provider.dart';
+
 class HearableServiceView extends StatelessWidget {
   const HearableServiceView({super.key});
 
@@ -302,19 +310,20 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   int _selectedIndex = 0;
  
   void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-    if (index == 0) {
-      
-    } else if (index == 1) {
-      // Calendar画面に遷移
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Calendar()),
-      );
-    }
-  });
-}
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        
+      } else if (index == 1) {
+        // Calendar画面に遷移
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Calendar()),
+        );
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -333,6 +342,9 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     //int gyrX;
     int x_num = NineAxisSensor().getResultString();
     int z_num = NineAxisSensor().getResultStringZ();
+
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -374,6 +386,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                 enable: nineAxisSensor.isEnabled,
                                 function: _switch9AxisSensor))),
                     const SizedBox(height: 5),
+
                     Consumer<NineAxisSensor>(
                         builder: ((context, nineAxisSensor, _) =>
                             Widgets.resultContainer(
@@ -384,7 +397,12 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   ' ,  z:  ' +
                                   nineAxisSensor.getResultStringZ().toString() +
                                   '  ',
-                            ))),
+                            ))
+                    ),
+
+                    Center(
+                      child: LineChartWidget(pricePoints),
+                    ),
                     const SizedBox(height: 20),
 
                     //ユーザー側の出力
