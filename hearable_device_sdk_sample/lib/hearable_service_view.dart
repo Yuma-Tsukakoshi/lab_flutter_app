@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:hearable_device_sdk_sample/calendar.dart';
 import 'package:hearable_device_sdk_sample/result.dart';
@@ -19,6 +21,14 @@ import 'package:fl_chart/fl_chart.dart';
 
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
 import 'dart:math' as math;
+
+import 'package:hearable_device_sdk_sample/lineChart.dart';
+import 'package:hearable_device_sdk_sample/pricePoints.dart';
+
+import 'dart:async';
+import 'dart:io';
+import 'package:excel/excel.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HearableServiceView extends StatelessWidget {
   const HearableServiceView({super.key});
@@ -42,6 +52,70 @@ class HearableServiceView extends StatelessWidget {
 class _HearableServiceView extends StatefulWidget {
   @override
   State<_HearableServiceView> createState() => _HearableServiceViewState();
+}
+
+
+// タイマー終了時のコールバック型定義
+typedef OnEndedCallback = Function();
+
+// 定期的に経過時間を通知するためのコールバック型定義
+typedef OnTickedCallback = Function(MyTimer);
+
+class MyTimer {
+  // タイマーを開始してから停止までの時間
+  final Duration _timeLimit;
+  
+  // [_tick]毎に[_onTickedCallback]で通知を行う
+  final Duration _tick;
+  
+  // 経過時間[_elapsed]が[_timeLimeit]以上になったときに呼ばれるコールバック
+  final OnEndedCallback _onEndedCallback;
+  
+  // [_tick]毎に呼ばれるコールバック
+  final OnTickedCallback _onTickedCallback;
+  
+  // 内部で使用するタイマー
+  Timer? _timer;
+  
+  // 経過時間
+  Duration _elapsed = Duration(seconds: 0);
+
+  MyTimer(
+    this._timeLimit,
+    this._tick,
+    this._onEndedCallback,
+    this._onTickedCallback,
+  );
+  
+  // 経過時間を取得するgetter
+  Duration get elapsedTime => _elapsed; 
+
+  // タイマーを開始するメソッド
+  void start() {
+    if(_timer == null){
+      _timer = Timer.periodic(_tick, _onTicked);
+    }
+  }
+
+  // タイマーを停止するメソッド
+  // タイマーを停止した場合は[_onEndedCallback]は呼ばれない
+  void stop() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+  }
+  
+  // [_elapsed]を更新して[_onTickedCallback]を呼び出す
+  // 終了判定も行う
+  void _onTicked(Timer t) {
+    this._elapsed += _tick;
+    this._onTickedCallback(this);
+
+    if (this._elapsed >= this._timeLimit) {
+      _onEndedCallback();
+      t.cancel();
+    }
+  }
 }
 
 class _HearableServiceViewState extends State<_HearableServiceView> {
@@ -69,6 +143,62 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
 
   TextEditingController batteryIntervalController = TextEditingController();
   TextEditingController batteryResultController = TextEditingController();
+
+  List<int> xValues = [];
+  List<int> zValues = [];
+  Timer? timer;
+
+  int _counter = 100;
+  bool flag = false;
+
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  Future<String> getDirectoryPath() async {
+    String directoryPath = (await getApplicationDocumentsDirectory()).path;
+    return directoryPath;
+  }
+
+  void startTraining() {
+    // リストをクリア
+    _counter = 100;
+    xValues.clear();
+    zValues.clear();
+    // 20秒のタイマーを設定
+    // timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+
+    timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+       _counter--;
+      setState(() {});
+
+      setState(() {
+        xValues.add(NineAxisSensor().getResultString()); 
+        zValues.add(NineAxisSensor().getResultStringZ()); 
+      });
+
+      print(xValues);
+      print(zValues);
+
+      if (_counter==0){
+        // タイマーを停止
+        timer.cancel();
+      }
+    });
+
+    // 9軸センサのデータをリストに追加する処理
+    // 実際にはセンサからのデータ取得方法に置き換えてください
+    // Timer.periodic(Duration(c), (timer) {
+    //   if (!timer.isActive) return; // タイマーが停止していたら何もしない
+    //   setState(() {
+    //     xValues.add(NineAxisSensor().getResultString()); // 仮のメソッド
+    //     zValues.add(NineAxisSensor().getResultStringZ()); // 仮のメソッド
+    //   });
+    // });
+  }
 
   void _createUuid() {
     userUuid = const Uuid().v4();
@@ -302,19 +432,20 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   int _selectedIndex = 0;
  
   void _onItemTapped(int index) {
-  setState(() {
-    _selectedIndex = index;
-    if (index == 0) {
-      
-    } else if (index == 1) {
-      // Calendar画面に遷移
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Calendar()),
-      );
-    }
-  });
-}
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        
+      } else if (index == 1) {
+        // Calendar画面に遷移
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Calendar()),
+        );
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -374,6 +505,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                 enable: nineAxisSensor.isEnabled,
                                 function: _switch9AxisSensor))),
                     const SizedBox(height: 5),
+
                     Consumer<NineAxisSensor>(
                         builder: ((context, nineAxisSensor, _) =>
                             Widgets.resultContainer(
@@ -384,8 +516,13 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   ' ,  z:  ' +
                                   nineAxisSensor.getResultStringZ().toString() +
                                   '  ',
-                            ))),
-                    const SizedBox(height: 20),
+                            ))
+                    ),
+
+                    // Center(
+                    //   child: LineChartWidget(pricePoints),
+                    // ),
+                    // const SizedBox(height: 20),
 
                     //ユーザー側の出力
                     if ((x_num > -500 && x_num < 500) && z_num > 200) ...{
@@ -555,13 +692,18 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                         ),
                       ],
                     ),
-                    
+
+                    Text(_counter.toString()),
+                    Text(xValues.toString()),
+                    Text(zValues.toString()),
+
                     ElevatedButton(
                       onPressed: () {
-                        // ボタンが押された時の処理
+                        startTraining();
                       },
+                      
                       child: const Text('トレーニングを開始する',
-                          style: TextStyle(
+                          style: TextStyle(   
                             fontSize: 20,
                             color: Colors.white
                           )),
