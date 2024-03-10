@@ -23,6 +23,7 @@ import 'dart:math' as math;
 
 class Calendar extends StatelessWidget {
   const Calendar({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -46,40 +47,6 @@ class _HearableServiceView extends StatefulWidget {
 }
 
 class _HearableServiceViewState extends State<_HearableServiceView> {
-  final HearableDeviceSdkSamplePlugin _samplePlugin =
-      HearableDeviceSdkSamplePlugin();
-  String userUuid = (Eaa().featureGetCount == 0)
-      ? const Uuid().v4()
-      : Eaa().registeringUserUuid;
-  var selectedIndex = -1;
-  var selectedUser = '';
-  bool isSetEaaCallback = false;
-
-  var config = Config();
-  Eaa eaa = Eaa();
-
-  TextEditingController featureRequiredNumController = TextEditingController();
-  TextEditingController featureCountController = TextEditingController();
-  TextEditingController eaaResultController = TextEditingController();
-
-  TextEditingController nineAxisSensorResultController =
-      TextEditingController();
-  TextEditingController temperatureResultController = TextEditingController();
-  TextEditingController heartRateResultController = TextEditingController();
-  TextEditingController ppgResultController = TextEditingController();
-
-  TextEditingController batteryIntervalController = TextEditingController();
-  TextEditingController batteryResultController = TextEditingController();
-
-  void _createUuid() {
-    userUuid = const Uuid().v4();
-
-    eaa.featureGetCount = 0;
-    eaa.registeringUserUuid = userUuid;
-    _samplePlugin.cancelEaaRegistration();
-
-    setState(() {});
-  }
 
   int _selectedIndex = 1;
  
