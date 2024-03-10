@@ -52,7 +52,7 @@ class NineAxisSensor extends ChangeNotifier {
 
       String fullnumX = "$upperBitsX$lowerBitsX";
       int decimalValueX = int.parse(fullnumX, radix: 16); // 16進数を10進数に変換
-      print(decimalValueX);
+      // print(decimalValueX);
       if (decimalValueX > 23767) {
         decimalValueX -= 65536;
       }
@@ -68,7 +68,7 @@ class NineAxisSensor extends ChangeNotifier {
 
       String fullnumY = "$upperBitsY$lowerBitsY";
       int decimalValueY = int.parse(fullnumY, radix: 16); // 16進数を10進数に変換
-      print(decimalValueY);
+      // print(decimalValueY);
 
       //Z
       String upperBitsZ = data[15].toRadixString(16); // 上位8ビット
@@ -76,7 +76,7 @@ class NineAxisSensor extends ChangeNotifier {
 
       String fullnumZ = "$upperBitsZ$lowerBitsZ";
       int decimalValueZ = int.parse(fullnumZ, radix: 16); // 16進数を10進数に変換
-      print(decimalValueZ);
+      // print(decimalValueZ);
       if (decimalValueZ > 23767) {
         decimalValueZ -= 65536;
       }

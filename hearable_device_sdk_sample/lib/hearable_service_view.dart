@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:hearable_device_sdk_sample/calendar.dart';
 import 'package:hearable_device_sdk_sample/result.dart';
@@ -146,7 +148,9 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   List<int> zValues = [];
   Timer? timer;
 
-  int _counter = 0;
+  int _counter = 100;
+  bool flag = false;
+
 
   @override
   void dispose() {
@@ -154,23 +158,37 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     super.dispose();
   }
 
+  Future<String> getDirectoryPath() async {
+    String directoryPath = (await getApplicationDocumentsDirectory()).path;
+    return directoryPath;
+  }
+
   void startTraining() {
     // リストをクリア
-    _counter = 10;
+    _counter = 100;
     xValues.clear();
     zValues.clear();
     // 20秒のタイマーを設定
     // timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
 
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
        _counter--;
-        setState(() {});
+      setState(() {});
 
-        if (_counter==0){
-        // Excelファイルに保存
-        saveToExcel();
+      setState(() {
+        xValues.add(NineAxisSensor().getResultString()); 
+        zValues.add(NineAxisSensor().getResultStringZ()); 
+      });
+
+      print(xValues);
+      print(zValues);
+
+      if (_counter==0){
         // タイマーを停止
         timer.cancel();
+
+        // Excelファイルに保存
+        saveToExcel();
       }
     });
 
@@ -198,12 +216,15 @@ Future<void> saveToExcel() async {
 
   // ファイルを保存
   var fileBytes = excel.save();
-  String directoryPath = (await getApplicationDocumentsDirectory()).path;
-  print(directoryPath);
+  // String directoryPath = (await getApplicationDocumentsDirectory()).path;
+  String directoryPath = r"C:\Users\yutak\workspace\lab_flutter_app";
   File file = File("$directoryPath/training_data.xlsx");
-  file.writeAsBytes(fileBytes!);
+  await file.writeAsBytes(fileBytes!);
 
-  print("Excelファイルを保存しました: $directoryPath/training_data.xlsx");
+  // エクセルファイルを起動
+  await Process.run('start', [file.path], runInShell: true);
+
+  // print("Excelファイルを保存しました: $directoryPath/training_data.xlsx");
 }
 
   void _createUuid() {
@@ -700,7 +721,24 @@ Future<void> saveToExcel() async {
                     ),
 
                     Text(_counter.toString()),
-                    
+                    Text(xValues.toString()),
+                    Text(zValues.toString()),
+
+                    FutureBuilder<String>(
+                        future: getDirectoryPath(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            if (snapshot.hasData) {
+                                return Text(snapshot.data!);
+                              } else {
+                                return Text('データが見つかりません');
+                              }
+                          } else {
+                            return CircularProgressIndicator(); // データが読み込まれるまでローディング表示
+                          }
+                        },
+                      ),
+
                     ElevatedButton(
                       onPressed: () {
                         startTraining();

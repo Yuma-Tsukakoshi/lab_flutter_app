@@ -53,7 +53,7 @@ class HearableDeviceSdkSamplePlugin {
 
   // platform(java,swift)からの呼び出し
   Future _platformCallHandler(MethodCall call) async {
-    print(call.method);
+    // print(call.method);
     switch (call.method) {
       case 'onChangeStatus':
         _callChangeStatusCallback(call);
