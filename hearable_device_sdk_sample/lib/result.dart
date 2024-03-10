@@ -1,25 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hearable_device_sdk_sample/calendar.dart';
-import 'package:hearable_device_sdk_sample/hearable_service_view.dart';
-import 'package:uuid/uuid.dart';
-import 'package:provider/provider.dart';
 
-//import 'package:hearable_device_sdk_sample/size_config.dart';
-//import 'package:hearable_device_sdk_sample/widget_config.dart';
-import 'package:hearable_device_sdk_sample/widgets.dart';
-import 'package:hearable_device_sdk_sample/alert.dart';
-import 'package:hearable_device_sdk_sample/nine_axis_sensor.dart';
-import 'package:hearable_device_sdk_sample/temperature.dart';
-import 'package:hearable_device_sdk_sample/heart_rate.dart';
-import 'package:hearable_device_sdk_sample/ppg.dart';
-import 'package:hearable_device_sdk_sample/eaa.dart';
-import 'package:hearable_device_sdk_sample/battery.dart';
-import 'package:hearable_device_sdk_sample/config.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:table_calendar/table_calendar.dart';
-
-import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
-import 'dart:math' as math;
 
 class Result extends StatelessWidget {
   Result(this.setCount);
