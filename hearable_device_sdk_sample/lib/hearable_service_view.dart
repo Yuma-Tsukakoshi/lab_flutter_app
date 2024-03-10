@@ -186,9 +186,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       if (_counter==0){
         // タイマーを停止
         timer.cancel();
-
-        // Excelファイルに保存
-        saveToExcel();
       }
     });
 
@@ -202,30 +199,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     //   });
     // });
   }
-
-Future<void> saveToExcel() async {
-  var excel = Excel.createExcel();
-  Sheet sheetObject = excel['Sheet1'];
-
-  // データをExcelに追加
-  for (int i = 0; i < xValues.length; i++) {
-    var row = i + 1; // Excelの行は1から始まる
-    sheetObject.cell(CellIndex.indexByString("A$row")).value = IntCellValue(xValues[i]);
-    sheetObject.cell(CellIndex.indexByString("B$row")).value = IntCellValue(zValues[i]);
-  }
-
-  // ファイルを保存
-  var fileBytes = excel.save();
-  // String directoryPath = (await getApplicationDocumentsDirectory()).path;
-  String directoryPath = r"C:\Users\yutak\workspace\lab_flutter_app";
-  File file = File("$directoryPath/training_data.xlsx");
-  await file.writeAsBytes(fileBytes!);
-
-  // エクセルファイルを起動
-  await Process.run('start', [file.path], runInShell: true);
-
-  // print("Excelファイルを保存しました: $directoryPath/training_data.xlsx");
-}
 
   void _createUuid() {
     userUuid = const Uuid().v4();
@@ -723,21 +696,6 @@ Future<void> saveToExcel() async {
                     Text(_counter.toString()),
                     Text(xValues.toString()),
                     Text(zValues.toString()),
-
-                    FutureBuilder<String>(
-                        future: getDirectoryPath(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.done) {
-                            if (snapshot.hasData) {
-                                return Text(snapshot.data!);
-                              } else {
-                                return Text('データが見つかりません');
-                              }
-                          } else {
-                            return CircularProgressIndicator(); // データが読み込まれるまでローディング表示
-                          }
-                        },
-                      ),
 
                     ElevatedButton(
                       onPressed: () {
