@@ -218,7 +218,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
           // トレーニングを終了する
           Navigator.of(context)
             .push(MaterialPageRoute(builder: (context) {
-            return Result();
+            return Result(setCount);
           }));
         }
       }
@@ -678,6 +678,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
 
                     ElevatedButton(
                       onPressed: () {
+                        setCount = 3;
                         // startTimer();
                         startTraining();
                       },
@@ -694,9 +695,10 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
+                        // timer?.cancel(); 終了押してもタイマー止まらないので注意
                         Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
-                        return Result();
+                        return Result(setCount);
                         }));
                       },
                       child: const Text('トレーニングを終了する',
