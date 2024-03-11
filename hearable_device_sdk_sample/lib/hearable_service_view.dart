@@ -147,8 +147,9 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   List<int> xValues = [];
   List<int> zValues = [];
   Timer? timer;
+  Timer? get_axis_timer;
 
-  int _counter = 2;
+  int _counter = 3;
   bool flag = false;
 
 /*
@@ -196,32 +197,82 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   }
 
   void startTraining() {
-    int x_num = NineAxisSensor().getResultString();
-    int z_num = NineAxisSensor().getResultStringZ();
+    get_axis_timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      int x_num = NineAxisSensor().getResultString();
+      int z_num = NineAxisSensor().getResultStringZ();
+      print(x_num);
+      print(z_num);
+    });
 
-    // 腕立て伏せ
-    _counter = 2;
+    _counter = 3;
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _counter--;
-      setState(() {});
-      if (_counter==0){
-        kind_idx++;
-        _counter = 2;
-        if (kind_idx == 4) {
-          kind_idx = 0;
-          setCount--;
-          _counter = 2;
-        }
-
-        if (setCount == 0 ){
-          timer.cancel();
-          // トレーニングを終了する
-          Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) {
-            return Result(setCount);
-          }));
+      // 腕立て & スクワット　skip
+      if (kind_idx == 0 || kind_idx == 1) {
+        _counter--;
+        setState(() {});
+        if (_counter==0){
+          kind_idx++;
+          _counter = 3;
         }
       }
+
+      // 腹筋
+      if (kind_idx == 2){
+        // if 文で閾値処理書く　restCount--;
+        _counter--;
+        setState(() {});
+        if (_counter==0){
+          kind_idx++;
+          _counter = 3;
+        }
+      }
+
+      // 背筋
+      if (kind_idx == 3){
+        // if 文で閾値処理書く　restCount--;
+        _counter--;
+        setState(() {});
+        if (_counter==0){
+          kind_idx++;
+          _counter = 3;
+        }
+      }
+
+      if (kind_idx == 4) {
+        kind_idx = 0;
+        setCount--;
+        _counter = 3;
+      }
+
+      
+      if (setCount == 0 ){
+        timer.cancel();
+        // トレーニングを終了する
+        Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) {
+          return Result(setCount);
+        }));
+      }
+
+      // if (_counter==0){
+      //   kind_idx++;
+      //   _counter = 3;
+
+      //   if (kind_idx == 4) {
+      //     kind_idx = 0;
+      //     setCount--;
+      //     _counter = 3;
+      //   }
+
+      //   if (setCount == 0 ){
+      //     timer.cancel();
+      //     // トレーニングを終了する
+      //     Navigator.of(context)
+      //       .push(MaterialPageRoute(builder: (context) {
+      //       return Result(setCount);
+      //     }));
+      //   }
+      // }
     });
   }
 
@@ -657,7 +708,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   ),
                                   const SizedBox(height: 10), 
                                   Text(
-                                    ' 12 ',
+                                    restCount.toString(),
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.black,
