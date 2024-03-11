@@ -22,7 +22,7 @@ class Result extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/background_image_2.jpg'),
+                  image: AssetImage('assets/result.png'),
                   //fit: BoxFit.cover,
                   fit: BoxFit.fitHeight),
             ),
