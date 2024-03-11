@@ -124,35 +124,6 @@ class Widgets {
             children: [Expanded(child: Widgets.resultTextField(controller))]));
   }
 
-  /*static Widget resultContainerPhoto(
-      {required int verticalRatio,
-      required TextEditingController controller,
-      required double text,
-      required String photo
-      }) {
-        //int gyrx=int.parse(text);
-        //controller.text = gyrx.toString();
-
-      if(text>30000){
-      String photo='assets/penguin_down.jpeg';
-      }
-      else{
-      String photo='assets/penguin_up.jpeg';
-      }
-
-      controller.text=photo;
-
-
-
-    return Container(
-        width: SizeConfig.blockSizeHorizontal * 85,
-        //height: SizeConfig.blockSizeVertical * verticalRatio,
-        height: 80,
-        decoration: BoxDecoration(border: Border.all(width: 1)),
-        child: Column(
-            children: [Expanded(child: Widgets.resultTextField(controller))]));
-  }
-  */
   static Widget resultTextField(TextEditingController controller) {
     return TextField(
       controller: controller,
