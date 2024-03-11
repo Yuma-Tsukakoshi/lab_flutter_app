@@ -148,9 +148,21 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   List<int> zValues = [];
   Timer? timer;
 
-  int _counter = 100;
+  int _counter = 2;
   bool flag = false;
 
+/*
+方針：
+・各種目の間に5秒のインターバルを設ける
+・restCountが0になったら次の種目に移り、restCountを5に戻す　
+　もしindexが最後まで行ったらSetCountを減らし、restCountを5に戻す
+・SetCountが0になったらトレーニングを終了する
+*/
+  List<String> kind = ['腕立て伏せ', 'スクワット', '腹筋', '背筋']; // 今回は腕立てとスクワットはスキップして腹筋と背筋のみ 理由：センサの値がうまく取れない→首と頭の角度が変わらないため
+  List<String> kind_img = ['udetate.png', 'sukuwatto.png', 'hukkin.png', 'haikinn.png'];
+  int kind_idx = 0;
+  int setCount = 3;
+  int restCount = 5; // 一種目 時短のため 5回に設定 ビデオを撮る際の考慮 0になったら0に戻す
 
   @override
   void dispose() {
@@ -158,18 +170,11 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     super.dispose();
   }
 
-  Future<String> getDirectoryPath() async {
-    String directoryPath = (await getApplicationDocumentsDirectory()).path;
-    return directoryPath;
-  }
-
-  void startTraining() {
+  void startTimer() {
     // リストをクリア
     _counter = 100;
     xValues.clear();
     zValues.clear();
-    // 20秒のタイマーを設定
-    // timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
 
     timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
        _counter--;
@@ -188,16 +193,36 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
         timer.cancel();
       }
     });
+  }
 
-    // 9軸センサのデータをリストに追加する処理
-    // 実際にはセンサからのデータ取得方法に置き換えてください
-    // Timer.periodic(Duration(c), (timer) {
-    //   if (!timer.isActive) return; // タイマーが停止していたら何もしない
-    //   setState(() {
-    //     xValues.add(NineAxisSensor().getResultString()); // 仮のメソッド
-    //     zValues.add(NineAxisSensor().getResultStringZ()); // 仮のメソッド
-    //   });
-    // });
+  void startTraining() {
+    int x_num = NineAxisSensor().getResultString();
+    int z_num = NineAxisSensor().getResultStringZ();
+
+    // 腕立て伏せ
+    _counter = 2;
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _counter--;
+      setState(() {});
+      if (_counter==0){
+        kind_idx++;
+        _counter = 2;
+        if (kind_idx == 4) {
+          kind_idx = 0;
+          setCount--;
+          _counter = 2;
+        }
+
+        if (setCount == 0 ){
+          timer.cancel();
+          // トレーニングを終了する
+          Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) {
+            return Result(setCount);
+          }));
+        }
+      }
+    });
   }
 
   void _createUuid() {
@@ -519,11 +544,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             ))
                     ),
 
-                    // Center(
-                    //   child: LineChartWidget(pricePoints),
-                    // ),
-                    // const SizedBox(height: 20),
-
                     //ユーザー側の出力
                     if ((x_num > -500 && x_num < 500) && z_num > 200) ...{
                       Text("自分：上"),
@@ -546,48 +566,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                     },
 
                     const SizedBox(height: 20),
-                    /*Consumer<NineAxisSensor>(
-                    builder: ((context, nineAxisSensor, _) =>
-                        Widgets.resultContainerPhoto(
-                            verticalRatio: 40,
-                            controller: nineAxisSensorResultController,
-                            text:  nineAxisSensor.getResultString().toString(),
-                            photo: nineAxisSensor.getResultString().toString()
-                            
-                            
-                            //NineAxisSensor().gyrx<30000 ?Image.asset('assets/penguin_up.jpeg'):Image.asset('assets/penguin_up.jpeg'),
-                            /*if(nineAxisSensor.getResultString()>30000){
-                              String a=assets/penguin_down.jpeg;
-                            }*/
-                            ))
-                            ),
-                          */
-                    //if
-                    //NineAxisSensor().getResultString()<30000 ?Image.asset('assets/penguin_down.jpeg'):Image.asset('assets/penguin_up.jpeg'),
- 
-                    /*Consumer<NineAxisSensor>(
-                    builder: ((context, nineAxisSensor, _) =>
-                        Widgets.resultContainer(
-                            verticalRatio: 40,
-                            controller: nineAxisSensorResultController,
-                            text: nineAxisSensor.getResultString().toString()
-                            //NineAxisSensor().getResultString()<30000 ?Image.asset('assets/penguin_down.jpeg'):Image.asset('assets/penguin_up.jpeg'),
 
-                            /*if(nineAxisSensor.getResultString()>30000){
-                              String a=assets/penguin_down.jpeg;
-                            }*/
-                            ))
-                            ),*/
-                    Text(
-                        'X:' +
-                            x_num.toString() +
-                            " "
-                                'Z:' +
-                            z_num.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20)
-                    ),
-                    // 9軸センサ
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -609,7 +588,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   ),
                                   const SizedBox(height: 10), 
                                   Text(
-                                    '腕立て伏せ',
+                                    kind[kind_idx],
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.black,
@@ -624,7 +603,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    Image.asset('assets/udetate.png', height: 220, width: 320),
+                    Image.asset('assets/${kind_img[kind_idx]}', height: 220, width: 320),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -638,7 +617,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                 mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
                                 children: [
                                   Text(
-                                    'セット数',
+                                    '残りセット数',
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: Colors.black,
@@ -647,7 +626,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   ),
                                   const SizedBox(height: 10), 
                                   Text(
-                                    ' 残り 1セット ',
+                                    setCount.toString(),
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: Colors.black,
@@ -694,11 +673,13 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                     ),
 
                     Text(_counter.toString()),
-                    Text(xValues.toString()),
-                    Text(zValues.toString()),
+                    // Text(xValues.toString()),
+                    // Text(zValues.toString()),
 
                     ElevatedButton(
                       onPressed: () {
+                        setCount = 3;
+                        // startTimer();
                         startTraining();
                       },
                       
@@ -714,9 +695,10 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {
+                        // timer?.cancel(); 終了押してもタイマー止まらないので注意
                         Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) {
-                        return Result();
+                        return Result(setCount);
                         }));
                       },
                       child: const Text('トレーニングを終了する',
@@ -754,204 +736,3 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     );
   }
 }
-/*if(NineAxisSensor().getResultString()<30000){
-                  children.add(Image.asset('assets/penguin_down.jpeg'));
-                  }else {
-                    children.add(Image.asset('assets/penguin_down.jpeg'));
-                  }
-
-                return Column(
-                  children: children,
-                )*/
-
-/*
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  // ユーザUUID
-                  child: Row(children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 10, left: 30),
-                      child: Text(
-                        'ユーザUUID',
-                        style: WidgetConfig.boldTextStyle,
-                      ),
-                    ),
-                    SizedBox(width: SizeConfig.blockSizeHorizontal * 10),
-                    // UUID生成ボタン
-                    ElevatedButton(
-                        onPressed: _createUuid,
-                        style: WidgetConfig.buttonStyle,
-                        child: const Text(
-                          '生成',
-                          style: WidgetConfig.buttonTextStyle,
-                        ))
-                  ]),
-                ),
-                Text(
-                  userUuid,
-                  style: WidgetConfig.uuidTextStyle,
-                ),
-                const SizedBox(height: 20),
-                Widgets.inputNumberContainer(
-                    title: '特徴量取得必要回数',
-                    unit: '回',
-                    horizontalRatio: 15,
-                    controller: featureRequiredNumController,
-                    function: _onSavedFeatureRequiredNum),
-                const SizedBox(height: 20),
-                // 特徴量取得・登録、キャンセル
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal * 40,
-                      // 取得・登録ボタン
-                      child: ElevatedButton(
-                        onPressed: _feature,
-                        style: WidgetConfig.buttonStyle,
-                        child: const Text(
-                          '特徴量取得＆登録',
-                          style: WidgetConfig.buttonTextStyle,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: SizeConfig.blockSizeHorizontal * 5),
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal * 40,
-                      // 登録キャンセルボタン
-                      child: ElevatedButton(
-                        onPressed: _cancelRegistration,
-                        style: WidgetConfig.buttonStyle,
-                        child: const Text(
-                          'キャンセル',
-                          style: WidgetConfig.buttonTextStyle,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20),
-                      child: Text(
-                        '特徴量取得回数',
-                        style: WidgetConfig.boldTextStyle,
-                      ),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Consumer<Eaa>(
-                            builder: ((context, eaa, _) =>
-                                Text('${eaa.featureGetCount} 回'))))
-                  ],
-                ),
-                const SizedBox(height: 20),
-                // 照合、状態取得
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal * 40,
-                      // 照合ボタン
-                      child: ElevatedButton(
-                        onPressed: _verify,
-                        style: WidgetConfig.buttonStyle,
-                        child: const Text(
-                          '照合',
-                          style: WidgetConfig.buttonTextStyle,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: SizeConfig.blockSizeHorizontal * 5),
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal * 40,
-                      // 状態取得ボタン
-                      child: ElevatedButton(
-                        onPressed: _requestRegisterStatus,
-                        style: WidgetConfig.buttonStyle,
-                        child: const Text(
-                          '登録状態',
-                          style: WidgetConfig.buttonTextStyle,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  alignment: Alignment.topLeft,
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Text(
-                      '登録ユーザUUID',
-                      style: WidgetConfig.boldTextStyle,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                    width: SizeConfig.blockSizeHorizontal * 85,
-                    height: SizeConfig.blockSizeVertical * 20,
-                    child: Consumer<Eaa>(
-                        builder: ((context, eaa, _) =>
-                            _createUserListView(context)))),
-                const SizedBox(height: 10),
-                // ユーザー登録削除、全削除
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal * 40,
-                      // ユーザー登録削除ボタン
-                      child: ElevatedButton(
-                        onPressed: _deleteRegistration,
-                        style: WidgetConfig.buttonStyle,
-                        child: const Text(
-                          'ユーザー削除',
-                          style: WidgetConfig.buttonTextStyle,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: SizeConfig.blockSizeHorizontal * 5),
-                    SizedBox(
-                      width: SizeConfig.blockSizeHorizontal * 40,
-                      // 全削除ボタン
-                      child: ElevatedButton(
-                        onPressed: _deleteAllRegistration,
-                        style: WidgetConfig.buttonStyle,
-                        child: const Text(
-                          '全削除',
-                          style: WidgetConfig.buttonTextStyle,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Consumer<Eaa>(
-                    builder: ((context, eaa, _) => Widgets.resultContainer(
-                        verticalRatio: 25,
-                        controller: eaaResultController,
-                        text: eaa.resultStr))),
-                const SizedBox(height: 20),*/
-
-/*           ),
-          ),
-        ),
-      ),
-    );
-  }
-  
-}
-*/
-
-/*int getRandomNum() {
-  //ランダム変数生成
-  var random = math.Random();
-  int randomNumber = random.nextInt(5); // 0から4の範囲で乱数を生成
-  //print(randomNumber);
-  return randomNumber;
-}
-*/
