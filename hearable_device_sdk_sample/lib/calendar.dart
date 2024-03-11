@@ -61,30 +61,13 @@ class _CalendarState extends State<Calendar> {
     _eventsList = {
       DateTime.now().subtract(Duration(days: 2)): ['Event A6', 'Event B6'],
       DateTime.now(): ['Event A7', 'Event B7', 'Event C7'],
-      DateTime.now().add(Duration(days: 1)): [
-        'Event A8',
-        'Event B8',
-        'Event C8'
-      ],
-      DateTime.now().add(Duration(days: 3)):
-          Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
-      DateTime.now().add(Duration(days: 7)): [
-        'Event A10',
-        'Event B10',
-        'Event C10'
-      ],
-      DateTime.now().add(Duration(days: 11)): ['Event A11', 'Event B11'],
-      DateTime.now().add(Duration(days: 17)): [
-        'Event A12',
-        'Event B12',
-        'Event C12'
-      ],
-      DateTime.now().add(Duration(days: 22)): ['Event A13', 'Event B13'],
-      DateTime.now().add(Duration(days: 26)): [
-        'Event A14',
-        'Event B14',
-        'Event C14'
-      ],
+      DateTime.now().subtract(Duration(days: 1)): ['Event A8','Event B8','Event C8'],
+      DateTime.now().subtract(Duration(days: 3)): Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
+      DateTime.now().subtract(Duration(days: 7)): ['Event A10','Event B10','Event C10'],
+      DateTime.now().subtract(Duration(days: 11)): ['Event A11', 'Event B11'],
+      DateTime.now().subtract(Duration(days: 17)): ['Event A12','Event B12','Event C12'],
+      DateTime.now().subtract(Duration(days: 22)): ['Event A13', 'Event B13'],
+      DateTime.now().subtract(Duration(days: 26)): ['Event A14','Event B14','Event C14'],
     };
   }
 
