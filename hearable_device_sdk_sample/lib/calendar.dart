@@ -49,6 +49,8 @@ class _HearableServiceView extends StatefulWidget {
 class _HearableServiceViewState extends State<_HearableServiceView> {
 
   int _selectedIndex = 1;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;   
  
   void _onItemTapped(int index) {
   setState(() {
@@ -66,7 +68,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         //leadingWidth: SizeConfig.blockSizeHorizontal * 20,
@@ -89,11 +90,25 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 150),
                   child: TableCalendar(
-                    firstDay: DateTime(2020, 1, 1),
-                    lastDay: DateTime(2040, 12, 31),
-                    focusedDay: DateTime.now(),
+                    firstDay: DateTime.utc(2020, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: _focusedDay,
                     locale: 'ja_JP',
+                    headerStyle: HeaderStyle(
+                      formatButtonVisible: false,
                     ),
+                    selectedDayPredicate: (day) {      
+                      return isSameDay(_selectedDay, day);
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      if (!isSameDay(_selectedDay, selectedDay)) {
+                        setState(() {
+                          _selectedDay = selectedDay;
+                          _focusedDay = focusedDay;
+                        });
+                      }
+                    },
+                  ),
                 ),
                 Row(
                     mainAxisAlignment: MainAxisAlignment.center,
