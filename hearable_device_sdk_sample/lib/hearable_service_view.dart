@@ -198,29 +198,35 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
 
       // 腹筋
       if (kind_idx==2){
-        if (x_num > -500 && x_num < 500 && z_num > 200){
+        if (flag1[2] && x_num > 300 && z_num < -300){
+          flag1[3] = true;
+        }else if (flag1[1] && x_num > 300 && z_num < -300){
+          flag1[2] = true;
+        }else if (flag1[0] && x_num < -300 && z_num > 300){
+          flag1[1] = true;
+        } else if (x_num < -300 && z_num > 300){
           flag1[0] = true;
         }
-        if (x_num > -500 && x_num < 500 && z_num < -200){
-          flag1[1] = true;
-        }
-        if (z_num > -500 && z_num < 500 && x_num > 200){
-          flag1[2] = true;
-        }
-        if (z_num > -500 && z_num < 500 && x_num < -200){
-          flag1[3] = true;
+        print(flag1);
+
+        bool allTrue1 = flag1.every((value) => value == true);
+        
+        if(allTrue1){
+          restCount--;
+          setState(() {});
+          flag1 = [false, false, false, false];
         }
       }
 
       // 背筋
       if (kind_idx==3){
-        if (flag2[2] && (x_num > 250 && x_num < 500) && (z_num < -250 && z_num > -500)){
+        if (flag2[2] && x_num > 300 && z_num < -300){
           flag2[3] = true;
-        }else if (flag2[1] && (x_num > 250 && x_num < 500) && (z_num < -250 && z_num > -500)){
+        }else if (flag2[1] && x_num > 300 && z_num < -300){
           flag2[2] = true;
-        }else if (flag2[0] && (x_num < -250 && x_num > -500) && (z_num > 250 && z_num < 500)){
+        }else if (flag2[0] && x_num < -300 && z_num > 300){
           flag2[1] = true;
-        } else if ((x_num < -250 && x_num > -500) && (z_num > 250 && z_num < 500)){
+        } else if (x_num < -300 && z_num > 300){
           flag2[0] = true;
         }
         print(flag2);
@@ -232,11 +238,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
           setState(() {});
           flag2 = [false, false, false, false];
         }
-        
-        if (restCount==0){
-          kind_idx++;
-          restCount = 3;
-        }
+      
       }
     });
 
@@ -253,12 +255,18 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       }
 
       // 腹筋
-      if (kind_idx == 2){
-        _counter--;
-        setState(() {});
-        if (_counter==0){
+      if (kind_idx == 2) {
+        if (restCount==0){
           kind_idx++;
-          _counter = 2;
+          restCount = 3;
+        }
+      }
+
+      // 背筋
+      if (kind_idx == 3) {
+        if (restCount==0){
+          kind_idx++;
+          restCount = 3;
         }
       }
 
