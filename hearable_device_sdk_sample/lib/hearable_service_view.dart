@@ -147,22 +147,18 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   List<int> xValues = [];
   List<int> zValues = [];
   Timer? timer;
+  Timer? get_axis_timer;
 
   int _counter = 2;
-  bool flag = false;
 
-/*
-方針：
-・各種目の間に5秒のインターバルを設ける
-・restCountが0になったら次の種目に移り、restCountを5に戻す　
-　もしindexが最後まで行ったらSetCountを減らし、restCountを5に戻す
-・SetCountが0になったらトレーニングを終了する
-*/
-  List<String> kind = ['腕立て伏せ', 'スクワット', '腹筋', '背筋']; // 今回は腕立てとスクワットはスキップして腹筋と背筋のみ 理由：センサの値がうまく取れない→首と頭の角度が変わらないため
+  List<String> kind = ['腕立て伏せ', 'スクワット', '腹筋', '背筋']; 
   List<String> kind_img = ['udetate.png', 'sukuwatto.png', 'hukkin.png', 'haikinn.png'];
   int kind_idx = 0;
   int setCount = 3;
-  int restCount = 5; // 一種目 時短のため 5回に設定 ビデオを撮る際の考慮 0になったら0に戻す
+  int restCount = 3; // 一種目 時短のため 3回に設定 ビデオを撮る際の考慮 0になったら0に戻す
+  int flag_cnt = 0;
+  List<bool> flag1 = [false, false, false, false];
+  List<bool> flag2 = [false, false, false, false];
 
   @override
   void dispose() {
@@ -196,31 +192,98 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   }
 
   void startTraining() {
-    int x_num = NineAxisSensor().getResultString();
-    int z_num = NineAxisSensor().getResultStringZ();
+    get_axis_timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      int x_num = NineAxisSensor().getResultString();
+      int z_num = NineAxisSensor().getResultStringZ();
 
-    // 腕立て伏せ
+      // 腹筋
+      if (kind_idx==2){
+        if (flag1[2] && x_num > 300 && z_num < -300){
+          flag1[3] = true;
+        }else if (flag1[1] && x_num > 300 && z_num < -300){
+          flag1[2] = true;
+        }else if (flag1[0] && x_num < -300 && z_num > 300){
+          flag1[1] = true;
+        } else if (x_num < -300 && z_num > 300){
+          flag1[0] = true;
+        }
+        print(flag1);
+
+        bool allTrue1 = flag1.every((value) => value == true);
+        
+        if(allTrue1){
+          restCount--;
+          setState(() {});
+          flag1 = [false, false, false, false];
+        }
+      }
+
+      // 背筋
+      if (kind_idx==3){
+        if (flag2[2] && x_num > 300 && z_num < -300){
+          flag2[3] = true;
+        }else if (flag2[1] && x_num > 300 && z_num < -300){
+          flag2[2] = true;
+        }else if (flag2[0] && x_num < -300 && z_num > 300){
+          flag2[1] = true;
+        } else if (x_num < -300 && z_num > 300){
+          flag2[0] = true;
+        }
+        print(flag2);
+
+        bool allTrue2 = flag2.every((value) => value == true);
+        
+        if(allTrue2){
+          restCount--;
+          setState(() {});
+          flag2 = [false, false, false, false];
+        }
+      
+      }
+    });
+
     _counter = 2;
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _counter--;
-      setState(() {});
-      if (_counter==0){
-        kind_idx++;
-        _counter = 2;
-        if (kind_idx == 4) {
-          kind_idx = 0;
-          setCount--;
+      // 腕立て & スクワット　skip
+      if (kind_idx == 0 || kind_idx == 1) {
+        _counter--;
+        setState(() {});
+        if (_counter==0){
+          kind_idx++;
           _counter = 2;
         }
+      }
 
-        if (setCount == 0 ){
-          timer.cancel();
-          // トレーニングを終了する
-          Navigator.of(context)
-            .push(MaterialPageRoute(builder: (context) {
-            return Result(setCount);
-          }));
+      // 腹筋
+      if (kind_idx == 2) {
+        if (restCount==0){
+          kind_idx++;
+          restCount = 3;
         }
+      }
+
+      // 背筋
+      if (kind_idx == 3) {
+        if (restCount==0){
+          kind_idx++;
+          restCount = 3;
+        }
+      }
+
+      if (kind_idx == 4) {
+        kind_idx = 0;
+        setCount--;
+        _counter = 3;
+      }
+
+      
+      if (setCount == 0){
+        timer.cancel();
+        // トレーニングを終了する
+        Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) {
+          return Result(setCount);
+        }));
       }
     });
   }
@@ -544,27 +607,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             ))
                     ),
 
-                    //ユーザー側の出力
-                    if ((x_num > -500 && x_num < 500) && z_num > 200) ...{
-                      Text("自分：上"),
-              
-                    } else if ((x_num > -500 && x_num < 500) &&
-                        z_num < -200) ...{
-                      Text("自分：下"),
-        
-                    } else if ((z_num > -500 && z_num < 500) &&
-                        x_num > 200) ...{
-                      Text("自分：左"),
- 
-                    } else if ((z_num > -500 && z_num < 500) &&
-                        x_num < -200) ...{
-                      Text("自分：右"),
-                      
-                    } else ...{
-                      Text("自分：正面"),
-                     
-                    },
-
                     const SizedBox(height: 20),
 
                     Row(
@@ -657,7 +699,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                                   ),
                                   const SizedBox(height: 10), 
                                   Text(
-                                    ' 12 ',
+                                    restCount.toString(),
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.black,
