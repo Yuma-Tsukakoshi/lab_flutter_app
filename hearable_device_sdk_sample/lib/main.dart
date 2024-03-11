@@ -152,7 +152,7 @@ class _StartScreenState extends State<_StartScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 60),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
