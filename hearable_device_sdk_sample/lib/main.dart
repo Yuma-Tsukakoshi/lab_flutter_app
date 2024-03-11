@@ -135,14 +135,6 @@ class _StartScreenState extends State<_StartScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 10), 
-                                Text(
-                                  '~ 音楽と筋トレで健康な身体を! ~ ',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
                               ],
                             ),
                           ),

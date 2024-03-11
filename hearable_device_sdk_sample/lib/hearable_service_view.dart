@@ -148,14 +148,14 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   Timer? timer;
   Timer? get_axis_timer;
 
-  int _counter = 5;
+  int _counter = 3;
 
   List<String> kind = ['腕立て伏せ', 'スクワット', '腹筋', '背筋']; 
   List<String> kind_img = ['udetate.png', 'sukuwatto.png', 'hukkin.png', 'haikinn.png'];
   List<String> kind_bg_img = ['udetate_bg.png', 'sukuwatto_bg.png', 'hukkin_bg.png', 'haikin_bg.png'];
   int kind_idx = 0;
   int setCount = 3;
-  int restCount = 10;
+  int restCount = 3;
   int flag_cnt = 0;
   List<bool> flag1 = [false, false, false, false];
   List<bool> flag2 = [false, false, false, false];
@@ -242,7 +242,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       }
     });
 
-    _counter = 5;
+    _counter = 3;
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       // 腕立て & スクワット　skip
       if (kind_idx == 0 || kind_idx == 1) {
@@ -250,7 +250,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
         setState(() {});
         if (_counter==0){
           kind_idx++;
-          _counter = 5;
+          _counter = 3;
         }
       }
 
@@ -258,7 +258,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       if (kind_idx == 2) {
         if (restCount==0){
           kind_idx++;
-          restCount = 10;
+          restCount = 3;
         }
       }
 
@@ -266,14 +266,14 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       if (kind_idx == 3) {
         if (restCount==0){
           kind_idx++;
-          restCount = 10;
+          restCount = 3;
         }
       }
 
       if (kind_idx == 4) {
         kind_idx = 0;
         setCount--;
-        _counter = 5;
+        _counter = 3;
       }
 
       
