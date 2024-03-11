@@ -155,7 +155,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   List<String> kind_bg_img = ['udetate_bg.png', 'sukuwatto_bg.png', 'hukkin_bg.png', 'haikin_bg.png'];
   int kind_idx = 0;
   int setCount = 3;
-  int restCount = 3; // 一種目 時短のため 3回に設定 ビデオを撮る際の考慮 0になったら0に戻す
+  int restCount = 10;
   int flag_cnt = 0;
   List<bool> flag1 = [false, false, false, false];
   List<bool> flag2 = [false, false, false, false];
@@ -258,7 +258,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       if (kind_idx == 2) {
         if (restCount==0){
           kind_idx++;
-          restCount = 3;
+          restCount = 10;
         }
       }
 
@@ -266,7 +266,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       if (kind_idx == 3) {
         if (restCount==0){
           kind_idx++;
-          restCount = 3;
+          restCount = 10;
         }
       }
 
