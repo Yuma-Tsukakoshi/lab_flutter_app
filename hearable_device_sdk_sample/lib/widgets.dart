@@ -112,40 +112,13 @@ class Widgets {
   static Widget resultContainer(
       {required int verticalRatio,
       required TextEditingController controller,
-      required String text}) {
-    controller.text = text;
-    return Container(
-        width: SizeConfig.blockSizeHorizontal * 85,
-        //height: SizeConfig.blockSizeVertical * verticalRatio,
-        height: 180,
-        decoration: BoxDecoration(border: Border.all(width: 1)),
-        child: Column(
-            children: [Expanded(child: Widgets.resultTextField(controller))]));
-  }
+      required String text,}) {
+        controller.text = text;
 
-  static Widget resultContainer2(
-      {required int verticalRatio,
-      required TextEditingController controller,
-      required String text}) {
-    controller.text = text;
     return Container(
         width: SizeConfig.blockSizeHorizontal * 85,
         //height: SizeConfig.blockSizeVertical * verticalRatio,
         height: 80,
-        decoration: BoxDecoration(border: Border.all(width: 1)),
-        child: Column(
-            children: [Expanded(child: Widgets.resultTextField(controller))]));
-  }
-
-  static Widget resultContainer3(
-      {required int verticalRatio,
-      required TextEditingController controller,
-      required String text}) {
-    controller.text = text;
-    return Container(
-        width: SizeConfig.blockSizeHorizontal * 85,
-        //height: SizeConfig.blockSizeVertical * verticalRatio,
-        height: 100,
         decoration: BoxDecoration(border: Border.all(width: 1)),
         child: Column(
             children: [Expanded(child: Widgets.resultTextField(controller))]));

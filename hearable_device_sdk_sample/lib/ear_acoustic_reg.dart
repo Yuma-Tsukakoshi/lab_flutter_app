@@ -244,7 +244,7 @@ class _EarAcousticState extends State<_EarAcoustic> {
       appBar: AppBar(
         title: const Text('耳音響認証の特徴量登録', style: TextStyle(fontSize: 16)),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Color.fromARGB(255, 167, 244, 0),
       ),
       body: GestureDetector(
         behavior: HitTestBehavior.opaque,
@@ -372,9 +372,10 @@ class _EarAcousticState extends State<_EarAcoustic> {
                 ),
                 Consumer<Eaa>(
                     builder: ((context, eaa, _) => Widgets.resultContainer(
-                        verticalRatio: 25,
-                        controller: eaaResultController,
-                        text: eaa.resultStr))),
+                          verticalRatio: 25,
+                          controller: eaaResultController,
+                          text: eaa.resultStr,
+                        ))),
                 const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

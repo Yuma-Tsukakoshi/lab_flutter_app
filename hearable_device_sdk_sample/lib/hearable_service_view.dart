@@ -1,4 +1,8 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:hearable_device_sdk_sample/calendar.dart';
+import 'package:hearable_device_sdk_sample/result.dart';
 import 'package:uuid/uuid.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +17,18 @@ import 'package:hearable_device_sdk_sample/ppg.dart';
 import 'package:hearable_device_sdk_sample/eaa.dart';
 import 'package:hearable_device_sdk_sample/battery.dart';
 import 'package:hearable_device_sdk_sample/config.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
+import 'dart:math' as math;
+
+import 'package:hearable_device_sdk_sample/lineChart.dart';
+import 'package:hearable_device_sdk_sample/pricePoints.dart';
+
+import 'dart:async';
+import 'dart:io';
+import 'package:excel/excel.dart';
+import 'package:path_provider/path_provider.dart';
 
 class HearableServiceView extends StatelessWidget {
   const HearableServiceView({super.key});
@@ -40,6 +54,70 @@ class _HearableServiceView extends StatefulWidget {
   State<_HearableServiceView> createState() => _HearableServiceViewState();
 }
 
+
+// タイマー終了時のコールバック型定義
+typedef OnEndedCallback = Function();
+
+// 定期的に経過時間を通知するためのコールバック型定義
+typedef OnTickedCallback = Function(MyTimer);
+
+class MyTimer {
+  // タイマーを開始してから停止までの時間
+  final Duration _timeLimit;
+  
+  // [_tick]毎に[_onTickedCallback]で通知を行う
+  final Duration _tick;
+  
+  // 経過時間[_elapsed]が[_timeLimeit]以上になったときに呼ばれるコールバック
+  final OnEndedCallback _onEndedCallback;
+  
+  // [_tick]毎に呼ばれるコールバック
+  final OnTickedCallback _onTickedCallback;
+  
+  // 内部で使用するタイマー
+  Timer? _timer;
+  
+  // 経過時間
+  Duration _elapsed = Duration(seconds: 0);
+
+  MyTimer(
+    this._timeLimit,
+    this._tick,
+    this._onEndedCallback,
+    this._onTickedCallback,
+  );
+  
+  // 経過時間を取得するgetter
+  Duration get elapsedTime => _elapsed; 
+
+  // タイマーを開始するメソッド
+  void start() {
+    if(_timer == null){
+      _timer = Timer.periodic(_tick, _onTicked);
+    }
+  }
+
+  // タイマーを停止するメソッド
+  // タイマーを停止した場合は[_onEndedCallback]は呼ばれない
+  void stop() {
+    if (_timer != null) {
+      _timer!.cancel();
+    }
+  }
+  
+  // [_elapsed]を更新して[_onTickedCallback]を呼び出す
+  // 終了判定も行う
+  void _onTicked(Timer t) {
+    this._elapsed += _tick;
+    this._onTickedCallback(this);
+
+    if (this._elapsed >= this._timeLimit) {
+      _onEndedCallback();
+      t.cancel();
+    }
+  }
+}
+
 class _HearableServiceViewState extends State<_HearableServiceView> {
   final HearableDeviceSdkSamplePlugin _samplePlugin =
       HearableDeviceSdkSamplePlugin();
@@ -57,14 +135,158 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   TextEditingController featureCountController = TextEditingController();
   TextEditingController eaaResultController = TextEditingController();
 
-  TextEditingController nineAxisSensorResultController =
-      TextEditingController();
+  TextEditingController nineAxisSensorResultController = TextEditingController();
   TextEditingController temperatureResultController = TextEditingController();
   TextEditingController heartRateResultController = TextEditingController();
   TextEditingController ppgResultController = TextEditingController();
 
   TextEditingController batteryIntervalController = TextEditingController();
   TextEditingController batteryResultController = TextEditingController();
+
+  List<int> xValues = [];
+  List<int> zValues = [];
+  Timer? timer;
+  Timer? get_axis_timer;
+
+  int _counter = 3;
+
+  List<String> kind = ['腕立て伏せ', 'スクワット', '腹筋', '背筋']; 
+  List<String> kind_img = ['udetate.png', 'sukuwatto.png', 'hukkin.png', 'haikinn.png'];
+  List<String> kind_bg_img = ['udetate_bg.png', 'sukuwatto_bg.png', 'hukkin_bg.png', 'haikin_bg.png'];
+  int kind_idx = 0;
+  int setCount = 3;
+  int restCount = 3;
+  int flag_cnt = 0;
+  List<bool> flag1 = [false, false, false, false];
+  List<bool> flag2 = [false, false, false, false];
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void startTimer() {
+    // リストをクリア
+    _counter = 100;
+    xValues.clear();
+    zValues.clear();
+
+    timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+       _counter--;
+      setState(() {});
+
+      setState(() {
+        xValues.add(NineAxisSensor().getResultString()); 
+        zValues.add(NineAxisSensor().getResultStringZ()); 
+      });
+
+      print(xValues);
+      print(zValues);
+
+      if (_counter==0){
+        // タイマーを停止
+        timer.cancel();
+      }
+    });
+  }
+
+  void startTraining() {
+    get_axis_timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      int x_num = NineAxisSensor().getResultString();
+      int z_num = NineAxisSensor().getResultStringZ();
+
+      // 腹筋
+      if (kind_idx==2){
+        if (flag1[2] && x_num > 300 && z_num < -300){
+          flag1[3] = true;
+        }else if (flag1[1] && x_num > 300 && z_num < -300){
+          flag1[2] = true;
+        }else if (flag1[0] && x_num < -300 && z_num > 300){
+          flag1[1] = true;
+        } else if (x_num < -300 && z_num > 300){
+          flag1[0] = true;
+        }
+        print(flag1);
+
+        bool allTrue1 = flag1.every((value) => value == true);
+        
+        if(allTrue1){
+          restCount--;
+          setState(() {});
+          flag1 = [false, false, false, false];
+        }
+      }
+
+      // 背筋
+      if (kind_idx==3){
+        if (flag2[2] && x_num > 300 && z_num < -300){
+          flag2[3] = true;
+        }else if (flag2[1] && x_num > 300 && z_num < -300){
+          flag2[2] = true;
+        }else if (flag2[0] && x_num < -300 && z_num > 300){
+          flag2[1] = true;
+        } else if (x_num < -300 && z_num > 300){
+          flag2[0] = true;
+        }
+        print(flag2);
+
+        bool allTrue2 = flag2.every((value) => value == true);
+        
+        if(allTrue2){
+          restCount--;
+          setState(() {});
+          flag2 = [false, false, false, false];
+        }
+      
+      }
+    });
+
+    _counter = 3;
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      // 腕立て & スクワット　skip
+      if (kind_idx == 0 || kind_idx == 1) {
+        _counter--;
+        setState(() {});
+        if (_counter==0){
+          kind_idx++;
+          _counter = 3;
+        }
+      }
+
+      // 腹筋
+      if (kind_idx == 2) {
+        if (restCount==0){
+          kind_idx++;
+          restCount = 3;
+        }
+      }
+
+      // 背筋
+      if (kind_idx == 3) {
+        if (restCount==0){
+          kind_idx++;
+          restCount = 3;
+        }
+      }
+
+      if (kind_idx == 4) {
+        kind_idx = 0;
+        setCount--;
+        _counter = 3;
+      }
+
+      
+      if (setCount == 0){
+        timer.cancel();
+        // トレーニングを終了する
+        Navigator.of(context)
+          .push(MaterialPageRoute(builder: (context) {
+          return Result(setCount);
+        }));
+      }
+    });
+  }
 
   void _createUuid() {
     userUuid = const Uuid().v4();
@@ -157,110 +379,6 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
         // エラーダイアログ
         Alert.showAlert(context, 'IllegalStateException');
         NineAxisSensor().isEnabled = !enabled;
-      }
-    }
-    setState(() {});
-  }
-
-  void _switchTemperature(bool enabled) async {
-    Temperature().isEnabled = enabled;
-    if (enabled) {
-      // callback登録
-      if (!(await Temperature().addTemperatureNotificationListener())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalArgumentException');
-        Temperature().isEnabled = !enabled;
-      }
-      // 取得開始
-      if (!(await _samplePlugin.startTemperatureNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Temperature().isEnabled = !enabled;
-      }
-    } else {
-      // 取得終了
-      if (!(await _samplePlugin.stopTemperatureNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Temperature().isEnabled = !enabled;
-      }
-    }
-    setState(() {});
-  }
-
-  void _switchHeartRate(bool enabled) async {
-    HeartRate().isEnabled = enabled;
-    if (enabled) {
-      // callback登録
-      if (!(await HeartRate().addHeartRateNotificationListener())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalArgumentException');
-        HeartRate().isEnabled = !enabled;
-      }
-      // 取得開始
-      if (!(await _samplePlugin.startHeartRateNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        HeartRate().isEnabled = !enabled;
-      }
-    } else {
-      // 取得終了
-      if (!(await _samplePlugin.stopHeartRateNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        HeartRate().isEnabled = !enabled;
-      }
-    }
-    setState(() {});
-  }
-
-  void _switchPpg(bool enabled) async {
-    Ppg().isEnabled = enabled;
-    if (enabled) {
-      // callback登録
-      if (!(await Ppg().addPpgNotificationListener())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalArgumentException');
-        Ppg().isEnabled = !enabled;
-      }
-      // 取得開始
-      if (!(await _samplePlugin.startPpgNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Ppg().isEnabled = !enabled;
-      }
-    } else {
-      // 取得終了
-      if (!(await _samplePlugin.stopPpgNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Ppg().isEnabled = !enabled;
-      }
-    }
-    setState(() {});
-  }
-
-  void _switchBattery(bool enabled) async {
-    Battery().isEnabled = enabled;
-    if (enabled) {
-      // callback登録
-      if (!(await Battery().addBatteryNotificationListener())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalArgumentException');
-        Battery().isEnabled = !enabled;
-      }
-      // 取得開始
-      if (!(await _samplePlugin.startBatteryNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Battery().isEnabled = !enabled;
-      }
-    } else {
-      // 取得終了
-      if (!(await _samplePlugin.stopBatteryNotification())) {
-        // エラーダイアログ
-        Alert.showAlert(context, 'IllegalStateException');
-        Battery().isEnabled = !enabled;
       }
     }
     setState(() {});
@@ -399,6 +517,24 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
     _resetSelection();
   }
 
+  int _selectedIndex = 0;
+ 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 0) {
+        
+      } else if (index == 1) {
+        // Calendar画面に遷移
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Calendar()),
+        );
+      }
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     _setRequiredNumText();
@@ -413,113 +549,219 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
           getRegistrationStatusCallback: _getRegistrationStatusCallback);
       isSetEaaCallback = true;
     }
+    //int gyrX;
+    int x_num = NineAxisSensor().getResultString();
+    int z_num = NineAxisSensor().getResultStringZ();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('センサデータ確認', style: TextStyle(fontSize: 16)),
+        //leadingWidth: SizeConfig.blockSizeHorizontal * 20,
+        //leading: Widgets.barBackButton(context),
+        title: const Text('トレーニングセンサデータ確認', style: TextStyle(fontSize: 16)),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        //iconTheme: const IconThemeData(color: Colors.blue),
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => {_saveInput(context)},
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                const SizedBox(height: 10),
-                const Text('確認したいデータをOnにしてください',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                // 9軸センサ
-                const SizedBox(
-                  height: 20,
-                ),
-                Consumer<NineAxisSensor>(
-                    builder: ((context, nineAxisSensor, _) =>
-                        Widgets.switchContainer(
-                            title: '9軸センサ',
-                            enable: nineAxisSensor.isEnabled,
-                            function: _switch9AxisSensor))),
-                const SizedBox(height: 10),
-                Consumer<NineAxisSensor>(
-                    builder: ((context, nineAxisSensor, _) =>
-                        Widgets.resultContainer(
-                            verticalRatio: 40,
-                            controller: nineAxisSensorResultController,
-                            text: nineAxisSensor.getResultString()))),
-                const SizedBox(height: 20),
-                // 温度
-                Consumer<Temperature>(
-                    builder: ((context, temperature, _) =>
-                        Widgets.switchContainer(
-                            title: '温度',
-                            enable: temperature.isEnabled,
-                            function: _switchTemperature))),
-                const SizedBox(height: 10),
-                Consumer<Temperature>(
-                    builder: ((context, temperature, _) =>
-                        Widgets.resultContainer2(
-                            verticalRatio: 15,
-                            controller: temperatureResultController,
-                            text: temperature.getResultString()))),
-                const SizedBox(height: 20),
-                // 脈数
-                Consumer<HeartRate>(
-                    builder: ((context, heartRate, _) =>
-                        Widgets.switchContainer(
-                            title: '脈数',
-                            enable: heartRate.isEnabled,
-                            function: _switchHeartRate))),
-                const SizedBox(height: 10),
-                Consumer<HeartRate>(
-                    builder: ((context, heartRate, _) =>
-                        Widgets.resultContainer2(
-                            verticalRatio: 18,
-                            controller: heartRateResultController,
-                            text: heartRate.getResultString()))),
-                const SizedBox(height: 20),
-                // 装着適正度
-                Consumer<Ppg>(
-                    builder: ((context, ppg, _) => Widgets.switchContainer(
-                        title: '装着適正度',
-                        enable: ppg.isEnabled,
-                        function: _switchPpg))),
-                const SizedBox(height: 10),
-                Consumer<Ppg>(
-                    builder: ((context, ppg, _) => Widgets.resultContainer3(
-                        verticalRatio: 18,
-                        controller: ppgResultController,
-                        text: ppg.getResultString()))),
-                const SizedBox(height: 20),
-                // バッテリー情報取得間隔設定
-                Widgets.inputNumberContainer(
-                    title: 'バッテリー情報取得間隔設定',
-                    unit: '秒',
-                    horizontalRatio: 20,
-                    controller: batteryIntervalController,
-                    function: _onSavedBatteryInterval),
-                const SizedBox(height: 10),
-                Consumer<Battery>(
-                    builder: ((context, battery, _) => Widgets.switchContainer(
-                        title: 'バッテリー情報',
-                        enable: battery.isEnabled,
-                        function: _switchBattery))),
-                const SizedBox(height: 10),
-                Consumer<Battery>(
-                    builder: ((context, battery, _) => Widgets.resultContainer2(
-                        verticalRatio: 15,
-                        controller: batteryResultController,
-                        text: battery.getResultString()))),
-                const SizedBox(height: 20),
-              ],
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/${kind_bg_img[kind_idx]}'),
+                  //fit: BoxFit.cover,
+                  fit: BoxFit.fitHeight),
             ),
           ),
-        ),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => {_saveInput(context)},
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    // 9軸センサ
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Consumer<NineAxisSensor>(
+                        builder: ((context, nineAxisSensor, _) =>
+                            Widgets.switchContainer(
+                                title: "",
+                                enable: nineAxisSensor.isEnabled,
+                                function: _switch9AxisSensor))),
+
+                    const SizedBox(height: 20),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Card(
+                          child: Container(
+                            width: 320,
+                            height: 80,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
+                                children: [
+                                  Text(
+                                    '種目',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10), 
+                                  Text(
+                                    kind[kind_idx],
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Image.asset('assets/${kind_img[kind_idx]}', height: 220, width: 320),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Card(
+                          child: Container(
+                            width: 150,
+                            height: 100,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
+                                children: [
+                                  Text(
+                                    '残りセット数',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10), 
+                                  Text(
+                                    setCount.toString(),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 20),
+                        Card(
+                          child: Container(
+                            width: 150,
+                            height: 100,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center, // 上下中央に配置
+                                children: [
+                                  Text(
+                                    '残り回数',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10), 
+                                  Text(
+                                    restCount.toString(),
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Text(_counter.toString()),
+                    // Text(xValues.toString()),
+                    // Text(zValues.toString()),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        setCount = 3;
+                        // startTimer();
+                        startTraining();
+                      },
+                      
+                      child: const Text('トレーニングを開始する',
+                          style: TextStyle(   
+                            fontSize: 20,
+                            color: Colors.white
+                          )),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(201, 243, 39, 39),
+                          ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        // timer?.cancel(); 終了押してもタイマー止まらないので注意
+                        Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) {
+                        return Result(setCount);
+                        }));
+                      },
+                      child: const Text('トレーニングを終了する',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white
+                          )),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color.fromARGB(202, 163, 193, 218),
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
+
+      bottomNavigationBar: BottomNavigationBar(
+       items: const [
+         BottomNavigationBarItem(
+           icon: Icon(Icons.home),
+           label: 'Home',
+         ),
+         BottomNavigationBarItem(
+           icon: Icon(Icons.calendar_today),
+           label: 'Calendar',
+         ),
+       ],
+       currentIndex: _selectedIndex,
+       selectedItemColor: Color.fromARGB(255, 26, 154, 228),
+       onTap: _onItemTapped,
+     ),
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hearable_device_sdk_sample/start_scan.dart';
 import 'dart:io';
 import 'package:provider/provider.dart';
@@ -8,16 +7,17 @@ import 'package:hearable_device_sdk_sample/alert.dart';
 import 'package:hearable_device_sdk_sample/result_message.dart';
 import 'package:hearable_device_sdk_sample/bluetooth_manager.dart';
 import 'package:hearable_device_sdk_sample_plugin/hearable_device_sdk_sample_plugin.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    title: 'ヒアラブル機能テストアプリ',
-    home: const StartScreen(),
-    theme: ThemeData(appBarTheme: const AppBarTheme(color: Colors.black)),
-  ));
+  await initializeDateFormatting('ja_JP').then(
+    (_) {
+      runApp(const MaterialApp(
+        title: 'mトレクエスト',
+        home: StartScreen(),
+      ));
+    },
+ );
 }
 
 class StartScreen extends StatelessWidget {
@@ -106,48 +106,82 @@ class _StartScreenState extends State<_StartScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset('assets/hearable.jpg'),
-              const Text(
-                'このサンプルアプリについて',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              const Text('ヒアラブルデバイスとの接続確認が行えます。'),
-              const SizedBox(
-                height: 80,
-              ),
-              TextButton(
-                  onPressed: () {
-                    _startService();
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) {
-                          return const StartScan(title: '接続開始');
-                        },
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const Offset begin = Offset(1.0, 0.0); // 右から左
-                          // final Offset begin = Offset(-1.0, 0.0); // 左から右
-                          const Offset end = Offset.zero;
-                          final Animatable<Offset> tween =
-                              Tween(begin: begin, end: end)
-                                  .chain(CurveTween(curve: Curves.easeInOut));
-                          final Animation<Offset> offsetAnimation =
-                              animation.drive(tween);
-                          return SlideTransition(
-                            position: offsetAnimation,
-                            child: child,
-                          );
-                        },
+              Stack(
+                children: [
+                  Image.asset('assets/lp.png'),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Color.fromARGB(150, 59, 120, 250),
+                            ),
+                            padding: EdgeInsets.all(10),
+                            child:Column(
+                              children: [
+                                Text(
+                                  'Mトレクエスト',
+                                  style: TextStyle(
+                                    fontSize: 40,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 10), 
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                  child: const Text(
-                    '早速始める',
-                    style: TextStyle(fontSize: 20),
-                  ))
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/tsurugi.png', height: 100, width: 100),
+                  TextButton(
+                      onPressed: () {
+                        _startService();
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) {
+                              return const StartScan(title: '接続開始');
+                            },
+                            transitionsBuilder:
+                                (context, animation, secondaryAnimation, child) {
+                              const Offset begin = Offset(1.0, 0.0); // 右から左
+                              // final Offset begin = Offset(-1.0, 0.0); // 左から右
+                              const Offset end = Offset.zero;
+                              final Animatable<Offset> tween =
+                                  Tween(begin: begin, end: end)
+                                      .chain(CurveTween(curve: Curves.easeInOut));
+                              final Animation<Offset> offsetAnimation =
+                                  animation.drive(tween);
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        '冒険を始める',
+                        style: TextStyle(fontSize: 20),
+                      )
+                  ),
+                ],
+              ),
             ],
           ),
         ));

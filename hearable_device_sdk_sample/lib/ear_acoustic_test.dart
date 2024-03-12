@@ -296,9 +296,11 @@ class _EarAcousticTestState extends State<_EarAcousticTest> {
                 ),
                 Consumer<Eaa>(
                     builder: ((context, eaa, _) => Widgets.resultContainer(
-                        verticalRatio: 25,
-                        controller: eaaResultController,
-                        text: eaa.resultStr))),
+                          verticalRatio: 25,
+                          controller: eaaResultController,
+                          text: eaa.resultStr,
+                          //text2: eaa.resultStr
+                        ))),
                 const SizedBox(height: 40),
               ],
             ),
