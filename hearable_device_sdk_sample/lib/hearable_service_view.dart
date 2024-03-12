@@ -135,8 +135,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   TextEditingController featureCountController = TextEditingController();
   TextEditingController eaaResultController = TextEditingController();
 
-  TextEditingController nineAxisSensorResultController =
-      TextEditingController();
+  TextEditingController nineAxisSensorResultController = TextEditingController();
   TextEditingController temperatureResultController = TextEditingController();
   TextEditingController heartRateResultController = TextEditingController();
   TextEditingController ppgResultController = TextEditingController();
@@ -149,13 +148,14 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
   Timer? timer;
   Timer? get_axis_timer;
 
-  int _counter = 2;
+  int _counter = 3;
 
   List<String> kind = ['腕立て伏せ', 'スクワット', '腹筋', '背筋']; 
   List<String> kind_img = ['udetate.png', 'sukuwatto.png', 'hukkin.png', 'haikinn.png'];
+  List<String> kind_bg_img = ['udetate_bg.png', 'sukuwatto_bg.png', 'hukkin_bg.png', 'haikin_bg.png'];
   int kind_idx = 0;
   int setCount = 3;
-  int restCount = 3; // 一種目 時短のため 3回に設定 ビデオを撮る際の考慮 0になったら0に戻す
+  int restCount = 3;
   int flag_cnt = 0;
   List<bool> flag1 = [false, false, false, false];
   List<bool> flag2 = [false, false, false, false];
@@ -242,7 +242,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
       }
     });
 
-    _counter = 2;
+    _counter = 3;
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
       // 腕立て & スクワット　skip
       if (kind_idx == 0 || kind_idx == 1) {
@@ -250,7 +250,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
         setState(() {});
         if (_counter==0){
           kind_idx++;
-          _counter = 2;
+          _counter = 3;
         }
       }
 
@@ -559,15 +559,14 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
         //leading: Widgets.barBackButton(context),
         title: const Text('トレーニングセンサデータ確認', style: TextStyle(fontSize: 16)),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(48, 116, 187, 10),
         //iconTheme: const IconThemeData(color: Colors.blue),
       ),
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/background_image_2.jpg'),
+                  image: AssetImage('assets/${kind_bg_img[kind_idx]}'),
                   //fit: BoxFit.cover,
                   fit: BoxFit.fitHeight),
             ),
@@ -589,23 +588,9 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                     Consumer<NineAxisSensor>(
                         builder: ((context, nineAxisSensor, _) =>
                             Widgets.switchContainer(
-                                title: '9軸センサ',
+                                title: "",
                                 enable: nineAxisSensor.isEnabled,
                                 function: _switch9AxisSensor))),
-                    const SizedBox(height: 5),
-
-                    Consumer<NineAxisSensor>(
-                        builder: ((context, nineAxisSensor, _) =>
-                            Widgets.resultContainer(
-                              verticalRatio: 40,
-                              controller: nineAxisSensorResultController,
-                              text: ' x: ' +
-                                  nineAxisSensor.getResultString().toString() +
-                                  ' ,  z:  ' +
-                                  nineAxisSensor.getResultStringZ().toString() +
-                                  '  ',
-                            ))
-                    ),
 
                     const SizedBox(height: 20),
 
@@ -714,7 +699,9 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                       ],
                     ),
 
-                    Text(_counter.toString()),
+                    const SizedBox(height: 20),
+
+                    // Text(_counter.toString()),
                     // Text(xValues.toString()),
                     // Text(zValues.toString()),
 
@@ -731,7 +718,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             color: Colors.white
                           )),
                           style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(161, 243, 39, 39),
+                            primary: Color.fromARGB(201, 243, 39, 39),
                           ),
                     ),
                     const SizedBox(height: 10),
@@ -749,7 +736,7 @@ class _HearableServiceViewState extends State<_HearableServiceView> {
                             color: Colors.white
                           )),
                           style: ElevatedButton.styleFrom(
-                            primary: Color.fromARGB(162, 163, 193, 218),
+                            primary: Color.fromARGB(202, 163, 193, 218),
                           ),
                     ),
                   ],

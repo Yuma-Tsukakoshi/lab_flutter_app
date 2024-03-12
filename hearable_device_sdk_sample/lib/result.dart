@@ -22,7 +22,7 @@ class Result extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/background_image_2.jpg'),
+                  image: AssetImage('assets/result.png'),
                   //fit: BoxFit.cover,
                   fit: BoxFit.fitHeight),
             ),
@@ -38,7 +38,7 @@ class Result extends StatelessWidget {
                         '今日のクエスト達成率',
                         style: TextStyle(
                           fontSize: 25,
-                          color: Colors.black,
+                          color:Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -47,6 +47,7 @@ class Result extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Card(
+                            color:  setCount >= 3 ? Color.fromARGB(202, 243, 241, 240) : Color.fromARGB(167, 66, 135, 226),
                             child: Container(
                               width: 320,
                               height: 120,
@@ -58,7 +59,7 @@ class Result extends StatelessWidget {
                                       '1セット',
                                       style: TextStyle(
                                         fontSize: 40,
-                                        color: Colors.black,
+                                        color: setCount >= 3 ? Colors.black : Colors.white,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -67,7 +68,7 @@ class Result extends StatelessWidget {
                                     ),
                                     Icon(
                                       Icons.task_alt,
-                                      color: setCount >= 3 ? Colors.black : Colors.blue,
+                                      color: setCount >= 3 ? Colors.black : Colors.white,
                                       size: 50,
                                     )
                                   ],
@@ -76,6 +77,7 @@ class Result extends StatelessWidget {
                             ),
                           ),
                           Card(
+                            color: setCount >= 2 ? Color.fromARGB(202, 243, 241, 240) : Color.fromARGB(167, 66, 135, 226),
                             child: Container(
                               width: 320,
                               height: 120,
@@ -87,7 +89,7 @@ class Result extends StatelessWidget {
                                       '2セット',
                                       style: TextStyle(
                                         fontSize: 40,
-                                        color: Colors.black,
+                                        color: setCount >= 2 ? Colors.black : Colors.white,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -96,7 +98,7 @@ class Result extends StatelessWidget {
                                     ),
                                     Icon(
                                       Icons.task_alt,
-                                      color: setCount >= 2 ? Colors.black : Colors.blue,
+                                      color: setCount >= 2 ? Colors.black : Colors.white,
                                       size: 50,
                                     )
                                   ],
@@ -105,6 +107,7 @@ class Result extends StatelessWidget {
                             ),
                           ),
                           Card(
+                            color: setCount >= 1 ? Color.fromARGB(202, 243, 241, 240) : Color.fromARGB(167, 66, 135, 226),
                             child: Container(
                               width: 320,
                               height: 120,
@@ -116,7 +119,7 @@ class Result extends StatelessWidget {
                                       '3セット',
                                       style: TextStyle(
                                         fontSize: 40,
-                                        color: Colors.black,
+                                        color: setCount >= 1 ? Colors.black : Colors.white,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -125,7 +128,7 @@ class Result extends StatelessWidget {
                                     ),
                                     Icon(
                                       Icons.task_alt,
-                                      color:  setCount >= 1 ? Colors.black : Colors.blue,
+                                      color: setCount >= 1 ? Colors.black : Colors.white,
                                       size: 50,
                                     )
                                   ],
@@ -159,7 +162,7 @@ class Result extends StatelessWidget {
                     fontSize: 18,
                   )),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
+                    primary: Color.fromARGB(167, 66, 135, 226),
                     maximumSize: Size(200, 50),
                     onPrimary: Colors.white,
                     shape: RoundedRectangleBorder(
